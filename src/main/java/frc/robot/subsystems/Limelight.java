@@ -4,30 +4,21 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 
-@Logged
 public class Limelight extends SubsystemBase {
-  String limelightName;
+  String limelightName = "limelight-front";
   /** Creates a new Limelight. */
   public Limelight() {
   }
 
   @Override
   public void periodic() {
+    // SmartDashboard.putNumber("aaaaaaaaaaa", LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-front").tagCount);
     // This method will be called once per scheduler run
-  }
-
-  public void gyroControl(boolean gyro) {
-    if(gyro == true) {
-      limelightName = "limelight-front";
-    } else if (gyro == false){
-      limelightName = "limelight-back";
-    }
   }
     public double limelight_aim_proportional()
   {    
@@ -103,7 +94,6 @@ public class Limelight extends SubsystemBase {
 
   public void limelightTagMode(boolean on) {
     if(on != true) {
-      LimelightHelpers.setLEDMode_ForceOff("limelight-back");
       LimelightHelpers.setLEDMode_ForceOff("limelight-front");
       // LimelightHelpers.setPipelineIndex("limelight-front", 1);
     } else {
@@ -111,4 +101,23 @@ public class Limelight extends SubsystemBase {
       // LimelightHelpers.setPipelineIndex("limelight-front", 0);
     }
   }
+
+  
+  //   double translationX;
+  //   double translationY;
+  //   // LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+  //   double currentXPos = LimelightHelpers.getTargetPose_RobotSpace2D();
+  //   double currentYPos = getTargetPose_RobotSpace2D();
+  //   SmartDashboard.putNumber("Current Position", currentPos);
+  //   double robotYaw = m_gyro.getYaw();
+  //   SmartDashboard.putNumber("Current Yaw", robotYaw);
+  //   if (alignment == 1) {
+  //     translationX = GET_X_POSE - alignOffset;
+  //     translationY = GET_Y_POSE - alignOffset;
+  //   } else {
+  //     translationX = GET_X_POSE + alignOffset;
+  //     translationY = GET_Y_POSE + alignOffset;
+  //   }
+  //   return translationX + ',' + TranslationY;
+  // }
 }
