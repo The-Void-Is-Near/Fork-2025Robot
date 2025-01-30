@@ -21,12 +21,12 @@ public class TeleopLimelightDrive extends Command {
   ChassisSpeeds relativeSpeed;
   boolean gyro;
   int invert;
-  int align;
+  boolean align;
   Translation2d translation;
   Translation2d translationCoordinates;
   Translation2d finalTranslation;
   /** Creates a new TeleopLimelightDrive. */
-  public TeleopLimelightDrive(Swerve swerve, Limelight limelight, int align) {
+  public TeleopLimelightDrive(Swerve swerve, Limelight limelight, boolean align) {
     this.swerve = swerve;
     this.align = align;
     this.limelight = limelight;
@@ -54,13 +54,13 @@ public class TeleopLimelightDrive extends Command {
 
     limelight.limelightTagMode(true);
     swerve.getLimelightPose();
-    if (align == 1 | swerve.mt2Pose !=null) {
+    if (align == true | swerve.mt2Pose !=null) {
     // translationCoordinates = swerve.mt2Pose.minus(finalVector);
     translationCoordinatesX = swerve.mt2Pose.getX()-(translationAllowedX);
     translationCoordinatesY = swerve.mt2Pose.getY()-(translationAllowedY);
     translationCoordinates = new Translation2d(translationCoordinatesX, translationCoordinatesY);
     finalTranslation = new Translation2d(translationCoordinates.getX(), translationVector.getY());
-    } else if (align == 0 | swerve.mt2Pose !=null) {
+    } else if (align == false | swerve.mt2Pose !=null) {
     translationCoordinatesX = swerve.mt2Pose.getX()+(translationAllowedX);
     translationCoordinatesY = swerve.mt2Pose.getY()+(translationAllowedY);
     translationCoordinates = new Translation2d(translationCoordinatesX, translationCoordinatesY);
@@ -71,20 +71,20 @@ public class TeleopLimelightDrive extends Command {
         boolean strafeDisqualifier;
         @SuppressWarnings("unused")
         Translation2d translationDifference;
-        if (align == 1) {
+        if (align == true) {
           // strafeVal = limelight.limelight_strafe_proportional() - 1;
           strafeProportional = limelight.limelight_strafe_proportional();
           strafeDisqualifier = true;
           SmartDashboard.putNumber("strafeProportional", strafeProportional);
           SmartDashboard.putBoolean("strafeDisqualifier", true);
-          SmartDashboard.putNumber("align", align);
+          SmartDashboard.putBoolean("align", align);
         } else {
           // strafeVal = limelight.limelight_strafe_proportional() + 1;
           strafeProportional = limelight.limelight_strafe_proportional();
           strafeDisqualifier = false;
           SmartDashboard.putNumber("strafeProportional", strafeProportional);
           SmartDashboard.putBoolean("strafeDisqualifier", false);
-          SmartDashboard.putNumber("align", align);
+          SmartDashboard.putBoolean("align", align);
         }
         /* Drive */
         swerve.drive(finalTranslation, swerve.mt2Pose.getRotation().getDegrees(), true, true);

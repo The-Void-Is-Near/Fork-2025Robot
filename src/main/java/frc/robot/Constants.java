@@ -19,12 +19,12 @@ public final class Constants {
     public static final class Swerve {
         public static final int pigeonID = 1;
 
-        public static final COTSTalonFXSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
+        public static final COTSTalonFXSwerveConstants chosenModule = 
         COTSTalonFXSwerveConstants.SDS.MK4i.KrakenX60(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L1);
 
         /* Drivetrain Constants */
-        public static final double trackWidth = Units.inchesToMeters(21.75); //TODO: This must be tuned to specific robot
-        public static final double wheelBase = Units.inchesToMeters(21.75); //TODO: This must be tuned to specific robot
+        public static final double trackWidth = Units.inchesToMeters(21.75);
+        public static final double wheelBase = Units.inchesToMeters(21.75);
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
         /* Swerve Kinematics
@@ -130,6 +130,11 @@ public final class Constants {
         }
     }
 
+    public static final class Limelight {
+        // public static final double limelightHeight = Units.inchesToMeters(20.0);
+        // public static final double limelightAngle = Units.degreesToRadians(30.0);
+        public static final String limelightName = "limelight-front";
+    }
 
     public static final class AutoConstants {
         public static final double kMaxSpeedMetersPerSecond = 3;

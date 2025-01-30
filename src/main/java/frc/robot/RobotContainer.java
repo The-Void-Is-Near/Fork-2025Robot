@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.TeleopClimb;
+import frc.robot.commands.TeleopLimelightDrive;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Swerve;
 
 /**
@@ -28,6 +30,7 @@ public class RobotContainer {
         /* Subsystems */
         private final Swerve s_Swerve = new Swerve();
         public final Climber climber = new Climber();
+        public final Limelight limelight = new Limelight();
 
         /* PathPlanner */
         private final SendableChooser<Command> autoChooser;
@@ -41,10 +44,13 @@ public class RobotContainer {
         private final int rotationAxis = XboxController.Axis.kRightX.value;
         private final int leftTrigger = XboxController.Axis.kLeftTrigger.value;
         private final int rightTrigger = XboxController.Axis.kRightTrigger.value;
+        
 
         /* Driver Buttons */
         private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
         private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kStart.value);
+        private final JoystickButton alignLButton = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+        private final JoystickButton alignRButton = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
 
         // public boolean gyroCheck;
         /**
@@ -62,7 +68,8 @@ public class RobotContainer {
 
                 climber.setDefaultCommand(
                                 new TeleopClimb(climber,
-                                                () -> -driver.getRawAxis(leftTrigger) + driver.getRawAxis(rightTrigger)));
+                                                () -> -driver.getRawAxis(leftTrigger)
+                                                                + driver.getRawAxis(rightTrigger)));
 
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -83,6 +90,9 @@ public class RobotContainer {
         private void configureButtonBindings() {
                 /* Driver Buttons */
                 zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+                alignRButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, true));
+
+                alignLButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, false));
         }
 
         /**
