@@ -10,10 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.TeleopClimb;
+import frc.robot.commands.TeleopElevator;
 import frc.robot.commands.TeleopLimelightDrive;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Swerve;
 
@@ -29,7 +29,7 @@ import frc.robot.subsystems.Swerve;
 public class RobotContainer {
         /* Subsystems */
         private final Swerve s_Swerve = new Swerve();
-        public final Climber climber = new Climber();
+        public final Elevator elevator = new Elevator();
         public final Limelight limelight = new Limelight();
 
         /* PathPlanner */
@@ -66,8 +66,8 @@ public class RobotContainer {
                                                 () -> -driver.getRawAxis(rotationAxis),
                                                 () -> robotCentric.getAsBoolean()));
 
-                climber.setDefaultCommand(
-                                new TeleopClimb(climber,
+                elevator.setDefaultCommand(
+                                new TeleopElevator(elevator,
                                                 () -> -driver.getRawAxis(leftTrigger)
                                                                 + driver.getRawAxis(rightTrigger)));
 
