@@ -8,13 +8,13 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Elevator;
 
-public class TeleopClimb extends Command {
+public class TeleopElevator extends Command {
   DoubleSupplier climbPositionSup;
-  Climber climb;
+  Elevator climb;
   /** Creates a new TeleopClimb. */
-  public TeleopClimb(Climber climb, DoubleSupplier climbPositionSup) {
+  public TeleopElevator(Elevator climb, DoubleSupplier climbPositionSup) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(climb);
     this.climb = climb;
@@ -30,7 +30,7 @@ public class TeleopClimb extends Command {
   public void execute() {
     
     double climbPositionVal = MathUtil.applyDeadband(climbPositionSup.getAsDouble(), 0.2);
-    climb.climb(climbPositionVal);
+    climb.setPosition(null);
   }
 
   // Called once the command ends or is interrupted.

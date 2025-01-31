@@ -10,7 +10,7 @@ import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 
 public class Limelight extends SubsystemBase {
-  String limelightName = "limelight-front";
+  String limelightName = Constants.Limelight.limelightName;
   /** Creates a new Limelight. */
   public Limelight() {
   }
