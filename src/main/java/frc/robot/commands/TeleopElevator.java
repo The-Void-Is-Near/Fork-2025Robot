@@ -8,6 +8,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.Elevator;
 
 public class TeleopElevator extends Command {
@@ -29,7 +30,7 @@ public class TeleopElevator extends Command {
   @Override
   public void execute() {
     
-    double climbPositionVal = MathUtil.applyDeadband(climbPositionSup.getAsDouble(), 0.2);
+    double climbPositionVal = MathUtil.applyDeadband(climbPositionSup.getAsDouble(), Constants.STICK_DEADBAND);
     climb.setPosition(null);
   }
 
