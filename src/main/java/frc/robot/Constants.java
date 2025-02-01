@@ -107,7 +107,8 @@ public final class Constants {
             public static final int ANGLE_MOTOR_ID = 5;
             public static final int CAN_CODER_ID = 1;
             public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(0.429443);
-            public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID,
+            public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
+                    ANGLE_MOTOR_ID,
                     CAN_CODER_ID, ANGLE_OFFSET);
         }
 
@@ -117,7 +118,8 @@ public final class Constants {
             public static final int ANGLE_MOTOR_ID = 6;
             public static final int CAN_CODER_ID = 2;
             public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(-0.458496);
-            public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID,
+            public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
+                    ANGLE_MOTOR_ID,
                     CAN_CODER_ID, ANGLE_OFFSET);
         }
 
@@ -127,7 +129,8 @@ public final class Constants {
             public static final int ANGLE_MOTOR_ID = 8;
             public static final int CAN_CODER_ID = 4;
             public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(0.323975);
-            public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID,
+            public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
+                    ANGLE_MOTOR_ID,
                     CAN_CODER_ID, ANGLE_OFFSET);
         }
 
@@ -137,7 +140,8 @@ public final class Constants {
             public static final int ANGLE_MOTOR_ID = 7;
             public static final int CAN_CODER_ID = 3;
             public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(-0.027344);
-            public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID, ANGLE_MOTOR_ID,
+            public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
+                    ANGLE_MOTOR_ID,
                     CAN_CODER_ID, ANGLE_OFFSET);
         }
     }
@@ -169,7 +173,14 @@ public final class Constants {
             ELEVATOR_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 350;
             ELEVATOR_CONFIG.MotionMagic.MotionMagicAcceleration = 2500;
         }
-            public static final Distance DEADZONE_DISTANCE = Units.Inches.of(1);
+        public static final Distance DEADZONE_DISTANCE = Units.Inches.of(1);
+    }
+
+    public enum reefPosition {
+        L1,
+        L2,
+        L3,
+        L4
     }
 
     public static final class Limelight {
