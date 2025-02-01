@@ -10,7 +10,7 @@ import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 
 public class Limelight extends SubsystemBase {
-  String limelightName = Constants.Limelight.limelightName;
+  String limelightName = Constants.Limelight.LIMELIGHT_FRONT_NAME;
   /** Creates a new Limelight. */
   public Limelight() {
   }
@@ -35,7 +35,7 @@ public class Limelight extends SubsystemBase {
     double targetingAngularVelocity = LimelightHelpers.getBotPose3d_TargetSpace(limelightName).getRotation().getAngle() * sign;
 
     // convert to radians per second for our drive method
-    targetingAngularVelocity *= Constants.Swerve.maxAngularVelocity;
+    targetingAngularVelocity *= Constants.Swerve.MAX_ANGULAR_VELOCITY;
 
     //invert since tx is positive when the target is to the right of the crosshair
     targetingAngularVelocity *= -0.03;
@@ -61,7 +61,7 @@ public class Limelight extends SubsystemBase {
     double targetingStrafeVelocity = LimelightHelpers.getTX(limelightName) * kP;
 
     // convert to radians per second for our drive method
-    targetingStrafeVelocity *= Constants.Swerve.maxSpeed;
+    targetingStrafeVelocity *= Constants.Swerve.MAX_SPEED;
 
     //invert since tx is positive when the target is to the right of the crosshair
     targetingStrafeVelocity *= -0.5;
@@ -80,7 +80,7 @@ public class Limelight extends SubsystemBase {
   {
     double kP = .1;
     double targetingForwardSpeed = LimelightHelpers.getTY(limelightName) * kP;
-    targetingForwardSpeed *= Constants.Swerve.maxSpeed;
+    targetingForwardSpeed *= Constants.Swerve.MAX_SPEED;
     targetingForwardSpeed *= -0.5;
     if (Math.abs(LimelightHelpers.getTY(limelightName)) >= 3) {
       SmartDashboard.putBoolean("limeRunForward", true);
