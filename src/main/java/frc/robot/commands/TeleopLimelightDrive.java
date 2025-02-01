@@ -46,6 +46,7 @@ public class TeleopLimelightDrive extends Command {
   public void execute() {
         Translation2d translationVector = new Translation2d(0, 0.5);
         Rotation2d rotationVector = new Rotation2d(0);
+        @SuppressWarnings("unused")
         Pose2d finalVector = new Pose2d(translationVector, rotationVector);
         double translationAllowedX = 1;
         double translationAllowedY = 0;
