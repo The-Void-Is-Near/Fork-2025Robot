@@ -11,60 +11,81 @@ import frc.robot.Constants.reefPosition;
 import frc.robot.subsystems.Elevator;
 
 public class TeleopElevator extends Command {
-  Elevator climb;
-  reefPosition reefPos;
+  Elevator elevator;
+  reefPosition nextReefPos; // Target position
+  reefPosition currentReefPos = reefPosition.L1; // Current position
+  boolean end;
+  boolean invert;
+
   /** Creates a new TeleopClimb. */
-  public TeleopElevator(Elevator climb, reefPosition reefPos) {
+  public TeleopElevator(Elevator elevator, boolean invert) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(climb);
-    this.climb = climb;
-    this.reefPos = reefPos;
+    addRequirements(elevator);
+    this.elevator = elevator;
+    this.invert = invert;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    end = false;
+    
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    switch (reefPos) {
+    SmartDashboard.putBoolean("Invert", invert);
+    switch (currentReefPos) {
       case L1:
-      climb.setPosition(Units.Inches.of(0.0));
-      SmartDashboard.putNumber("Extension", 0);
-      reefPos = reefPosition.L2;
+        if (!invert) { // Moving up
+          nextReefPos = reefPosition.L2;
+        } else { // At the lowest position, can't move down
+          end = true; // End command gracefully
+          return;
+        }
         break;
+    
       case L2:
-      climb.setPosition(Units.Inches.of(10.0));
-      SmartDashboard.putNumber("Extension", 1);
-      reefPos = reefPosition.L3;
+        nextReefPos = invert ? reefPosition.L1 : reefPosition.L3;
         break;
+    
       case L3:
-      climb.setPosition(Units.Inches.of(30.0));
-      SmartDashboard.putNumber("Extension", 2);
-      reefPos = reefPosition.L4;
+        nextReefPos = invert ? reefPosition.L2 : reefPosition.L4;
         break;
+    
       case L4:
-      climb.setPosition(Units.Inches.of(60.0));
-      SmartDashboard.putNumber("Extension", 3);
-      reefPos = reefPosition.L5;
+        if (!invert) { // At the highest position, can't move up
+          end = true;
+          return;
+        } else {
+          nextReefPos = reefPosition.L3;
+        }
         break;
-      case L5:
-      climb.setPosition(Units.Inches.of(0.0));
-      SmartDashboard.putNumber("Extension",4);
-          reefPos = reefPosition.L1;
-        break;
-      }
     }
+
+    // if (nextReefPos != reefPosition.NONE) {
+      elevator.setPosition(Units.Inches.of(nextReefPos == reefPosition.L1 ? 0.0 : 
+                                          nextReefPos == reefPosition.L2 ? 20.0 : 
+                                          nextReefPos == reefPosition.L3 ? 40.0 : 
+                                          nextReefPos == reefPosition.L4 ? 60.0 : 0.0));
+      SmartDashboard.putNumber("Extension", nextReefPos.ordinal());
+      currentReefPos = nextReefPos;
+      SmartDashboard.putString("ExtensionPos", currentReefPos.toString());
+      end = true;
+    // }
+
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    nextReefPos = currentReefPos;
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return end;
   }
 }
