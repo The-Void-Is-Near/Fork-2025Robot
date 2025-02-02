@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.constElevator;
+import frc.robot.Constants.reefPosition;
+import frc.robot.Robot;
 
 @Logged
 public class Elevator extends SubsystemBase {
@@ -33,6 +35,9 @@ public class Elevator extends SubsystemBase {
 
   Distance currentLeftPosition = Units.Inches.of(0);
   Distance currentRightPosition = Units.Inches.of(0);
+
+  reefPosition currentReefPos;
+  reefPosition desiredReefPos;
 
   @NotLogged
   PositionVoltage positionRequest;
@@ -56,6 +61,7 @@ public class Elevator extends SubsystemBase {
 
     leftMotorFollower.getConfigurator().apply(constElevator.ELEVATOR_CONFIG);
     rightMotorLeader.getConfigurator().apply(constElevator.ELEVATOR_CONFIG);
+    currentReefPos = reefPosition.L1;
   }
 
   public Distance getElevatorPosition() {
@@ -63,9 +69,13 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean isAtSetpoint() {
+    if(Robot.isSimulation()) {
+      return true;
+    } else {
     return (getElevatorPosition()
         .compareTo(getLastDesiredPosition().minus(Constants.constElevator.DEADZONE_DISTANCE)) > 0) &&
         getElevatorPosition().compareTo(getLastDesiredPosition().plus(Constants.constElevator.DEADZONE_DISTANCE)) < 0;
+    }
   }
 
   public AngularVelocity getRotorVelocity() {
@@ -84,6 +94,28 @@ public class Elevator extends SubsystemBase {
     rightMotorLeader.setControl(motionRequest.withPosition(height.in(Units.Inches)));
     leftMotorFollower.setControl(new Follower(rightMotorLeader.getDeviceID(), true));
     lastDesiredPosition = height;
+  }
+
+  public void setReef(boolean invert) {
+    switch (currentReefPos) {
+      case L1:
+      desiredReefPos = invert ? reefPosition.L1 : reefPosition.L2;
+        break;
+      case L2:
+      desiredReefPos = invert ? reefPosition.L1 : reefPosition.L3;
+        break;
+      case L3:
+      desiredReefPos = invert ? reefPosition.L2 : reefPosition.L4;
+        break;
+      case L4:
+      desiredReefPos = invert ? reefPosition.L3 : reefPosition.L4;
+        break;
+      }
+      setPosition(Units.Inches.of(desiredReefPos == reefPosition.L1 ? 0.0 : 
+                                          desiredReefPos == reefPosition.L2 ? 20.0 : 
+                                          desiredReefPos == reefPosition.L3 ? 40.0 : 
+                                          desiredReefPos == reefPosition.L4 ? 60.0 : 0.0));
+      currentReefPos = desiredReefPos;
   }
 
   public void setNeutral() {
@@ -111,6 +143,7 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Reef Position", currentReefPos.ordinal());
     // This method will be called once per scheduler run
     currentLeftPosition = Units.Inches.of(leftMotorFollower.getPosition().getValueAsDouble());
     currentRightPosition = Units.Inches.of(rightMotorLeader.getPosition().getValueAsDouble());
