@@ -143,7 +143,8 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Reef Position", currentReefPos.ordinal());
+    SmartDashboard.putString("Reef Position", currentReefPos.toString());
+    
     // This method will be called once per scheduler run
     currentLeftPosition = Units.Inches.of(leftMotorFollower.getPosition().getValueAsDouble());
     currentRightPosition = Units.Inches.of(rightMotorLeader.getPosition().getValueAsDouble());
