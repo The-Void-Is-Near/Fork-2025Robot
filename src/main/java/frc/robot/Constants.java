@@ -7,10 +7,13 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 // import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Units;
@@ -177,6 +180,7 @@ public final class Constants {
     }
 
     public enum reefPosition {
+        // NONE,
         L1,
         L2,
         L3,
@@ -198,6 +202,24 @@ public final class Constants {
         public static final double KPX_CONTROLLER = 1;
         public static final double KPY_CONTROLLER = 1;
         public static final double KP_THETA_CONTROLLER = 1;
+
+        public static final double MASS = 115;
+        // TODO: Calcuate the real value
+        public static final double MOI = 6.8;
+        public static final double WHEEL_COF = 1.0;
+        public static final DCMotor DRIVE_MOTOR = DCMotor.getKrakenX60(1);
+        public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(Constants.Swerve.WHEEL_CIRCUMFRENCE / 2,
+                Constants.Swerve.MAX_SPEED, WHEEL_COF,
+                DRIVE_MOTOR,
+                Constants.Swerve.DRIVE_CURRENT_LIMIT, 1);
+
+        public static final Translation2d[] MODULE_OFFSETS = {
+                new Translation2d(Constants.Swerve.WHEEL_BASE / 2.0, Constants.Swerve.TRACK_WIDTH / 2.0),
+                new Translation2d(Constants.Swerve.WHEEL_BASE / 2.0, -Constants.Swerve.TRACK_WIDTH / 2.0),
+                new Translation2d(-Constants.Swerve.WHEEL_BASE / 2.0, Constants.Swerve.TRACK_WIDTH / 2.0),
+                new Translation2d(-Constants.Swerve.WHEEL_BASE / 2.0, -Constants.Swerve.TRACK_WIDTH / 2.0) };
+
+        public static final RobotConfig ROBOT_CONFIG = new RobotConfig(MASS, MOI, MODULE_CONFIG, MODULE_OFFSETS);
 
         /* Constraint for the motion profilied robot angle controller */
         public static final TrapezoidProfile.Constraints KTHETA_CONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
