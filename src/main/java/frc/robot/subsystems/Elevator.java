@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -33,12 +34,15 @@ public class Elevator extends SubsystemBase {
   Distance currentLeftPosition = Units.Inches.of(0);
   Distance currentRightPosition = Units.Inches.of(0);
 
+  @NotLogged
   PositionVoltage positionRequest;
+  @NotLogged
   VoltageOut voltageRequest = new VoltageOut(0);
 
   public boolean attemptingZeroing = false;
   public boolean hasZeroed = false;
 
+  @NotLogged
   MotionMagicVoltage motionRequest;
 
   /** Creates a new Climber. */
