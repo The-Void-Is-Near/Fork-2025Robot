@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.reefPosition;
 import frc.robot.commands.TeleopElevator;
 import frc.robot.commands.TeleopLimelightDrive;
 import frc.robot.commands.TeleopSwerve;
@@ -49,8 +50,9 @@ public class RobotContainer {
         /* Driver Buttons */
         private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
         private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kStart.value);
-        private final JoystickButton alignLButton = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-        private final JoystickButton alignRButton = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+        private final JoystickButton alignLButton = new JoystickButton(driver, XboxController.Button.kLeftBumper.value); // Fix to Left Num
+        private final JoystickButton alignRButton = new JoystickButton(driver, XboxController.Button.kRightBumper.value); // Fix to Right Num
+        private final JoystickButton extendElevatorButton = new JoystickButton(driver, XboxController.Button.kRightBumper.value); // Correct, Leave as is
 
         // public boolean gyroCheck;
         /**
@@ -91,8 +93,8 @@ public class RobotContainer {
                 /* Driver Buttons */
                 zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
                 alignRButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, true));
-
                 alignLButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, false));
+                // I have no idea what these imputs do extendElevatorButton.whileTrue(new TeleopElevator());
         }
 
         /**
