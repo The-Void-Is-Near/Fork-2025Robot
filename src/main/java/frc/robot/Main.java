@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.opencv.core.Core;
+
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -20,6 +22,7 @@ public final class Main {
    * <p>If you change your main robot class, change the parameter type.
    */
   public static void main(String... args) {
+    System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     RobotBase.startRobot(Robot::new);
   }
 }
