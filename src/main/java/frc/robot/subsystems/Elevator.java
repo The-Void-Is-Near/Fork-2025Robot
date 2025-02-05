@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.io.File;
+
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
@@ -64,8 +65,8 @@ public class Elevator extends SubsystemBase {
 
   /** Creates a new Climber. */
   public Elevator() {
-    leftMotorFollower = new TalonFX(10);
-    rightMotorLeader = new TalonFX(11);
+    leftMotorFollower = new TalonFX(Constants.constElevator.LEFT_MOTOR_FOLLOWER_ID);
+    rightMotorLeader = new TalonFX(Constants.constElevator.RIGHT_MOTOR_LEADER_ID);
 
     lastDesiredPosition = Units.Inches.of(0);
     voltageRequest = new VoltageOut(0);
