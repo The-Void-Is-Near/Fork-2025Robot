@@ -106,9 +106,9 @@ public final class Constants {
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
         public static final class Mod0 {
-            public static final int DRIVE_MOTOR_ID = 1;
-            public static final int ANGLE_MOTOR_ID = 5;
-            public static final int CAN_CODER_ID = 1;
+            public static final int DRIVE_MOTOR_ID = 7;
+            public static final int ANGLE_MOTOR_ID = 9;
+            public static final int CAN_CODER_ID = 8;
             public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(0.429443);
             public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
                     ANGLE_MOTOR_ID,
@@ -117,9 +117,9 @@ public final class Constants {
 
         /* Front Right Module - Module 1 */
         public static final class Mod1 {
-            public static final int DRIVE_MOTOR_ID = 2;
+            public static final int DRIVE_MOTOR_ID = 4;
             public static final int ANGLE_MOTOR_ID = 6;
-            public static final int CAN_CODER_ID = 2;
+            public static final int CAN_CODER_ID = 5;
             public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(-0.458496);
             public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
                     ANGLE_MOTOR_ID,
@@ -128,9 +128,9 @@ public final class Constants {
 
         /* Back Left Module - Module 2 */
         public static final class Mod2 {
-            public static final int DRIVE_MOTOR_ID = 4;
-            public static final int ANGLE_MOTOR_ID = 8;
-            public static final int CAN_CODER_ID = 4;
+            public static final int DRIVE_MOTOR_ID = 10;
+            public static final int ANGLE_MOTOR_ID = 12;
+            public static final int CAN_CODER_ID = 11;
             public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(0.323975);
             public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
                     ANGLE_MOTOR_ID,
@@ -139,9 +139,9 @@ public final class Constants {
 
         /* Back Right Module - Module 3 */
         public static final class Mod3 {
-            public static final int DRIVE_MOTOR_ID = 3;
-            public static final int ANGLE_MOTOR_ID = 7;
-            public static final int CAN_CODER_ID = 3;
+            public static final int DRIVE_MOTOR_ID = 1;
+            public static final int ANGLE_MOTOR_ID = 3;
+            public static final int CAN_CODER_ID = 2;
             public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(-0.027344);
             public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
                     ANGLE_MOTOR_ID,
@@ -177,6 +177,8 @@ public final class Constants {
             ELEVATOR_CONFIG.MotionMagic.MotionMagicAcceleration = 2500;
         }
         public static final Distance DEADZONE_DISTANCE = Units.Inches.of(1);
+        public static final int LEFT_MOTOR_FOLLOWER_ID = 13;
+        public static final int RIGHT_MOTOR_LEADER_ID = 14;
     }
 
     public enum reefPosition {
