@@ -10,6 +10,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class TeleopIntake extends Command {
   /** Creates a new TeleopIntake. */
   public TeleopIntake() {
+    Intake intake;
+    double PercentOut;
+    public TeleopIntake(Intake intake, double PercentOut){
+        this.intake = intake;
+        this.PercentOut = PercentOut;
+    }
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -19,7 +25,9 @@ public class TeleopIntake extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    intake.spin(PercentOut);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
