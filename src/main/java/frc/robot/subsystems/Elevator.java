@@ -90,7 +90,7 @@ public class Elevator extends SubsystemBase {
     if (Robot.isSimulation()) {
       return true;
     } else {
-      return (getElevatorPosition()
+      return (getElevatorPosition() //Checking if the move request set the elevator in the correct position
           .compareTo(getLastDesiredPosition().minus(Constants.constElevator.DEADZONE_DISTANCE)) > 0) &&
           getElevatorPosition().compareTo(getLastDesiredPosition().plus(Constants.constElevator.DEADZONE_DISTANCE)) < 0;
     }
