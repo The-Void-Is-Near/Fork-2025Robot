@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DeepClimb extends SubsystemBase {
   /** Creates a new TeleopDeepClimb. */
   public DeepClimb() {
-    TalonFX deepClimbM = new TalonFX(0);
+    TalonFX deepClimbM = new TalonFX(15);
   }
-  public void Rotate(){
-
+  public void Rotate(float theta){
+    DeepClimb.
   }
 
   @Override
