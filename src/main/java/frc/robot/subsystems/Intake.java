@@ -3,18 +3,18 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-
-import edu.wpi.first.wpilibj2.command.Command;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Intake {
   /** Creates a new Intake. */
-  TalonFXS intakeM;
+  TalonFX intakeM;
   public Intake() {
-    intakeM = new TalonSRX()//MOTOR ID
+    intakeM = new TalonFX(16);//MOTOR ID
     // Use addRequirements() here to declare subsystem dependencies.
   }
   public void spin(double PercentOut){
-    intakeM.set(TalonSRXControlMode.PercentOut, -PercentOut);
+    intakeM.setVoltage(-PercentOut);
+    
   }
 }
