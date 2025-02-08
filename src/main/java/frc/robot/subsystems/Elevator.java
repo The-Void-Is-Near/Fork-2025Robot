@@ -128,6 +128,9 @@ public class Elevator extends SubsystemBase {
       case L4:
         imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/ReefL4.png";
         break;
+      case _:
+        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/image.png";
+        break;
     }
     image = Imgcodecs.imread(imagePath);
     outputStream.putFrame(image);
