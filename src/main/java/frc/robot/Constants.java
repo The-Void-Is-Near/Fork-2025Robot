@@ -25,6 +25,11 @@ public final class Constants {
     public static final String CAN_BUS_NAME = "*";
     public static final double STICK_DEADBAND = 0.1;
 
+    /* Intake Constants */
+    public static final class IntakeVals{
+        public static final int motorID = 16;
+    }
+
     public static final class Swerve {
         public static final int PIGEON_ID = 1;
 

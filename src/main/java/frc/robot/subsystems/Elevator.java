@@ -90,7 +90,7 @@ public class Elevator extends SubsystemBase {
     if (Robot.isSimulation()) {
       return true;
     } else {
-      return (getElevatorPosition()
+      return (getElevatorPosition() //Checking if the move request set the elevator in the correct position (after movement).
           .compareTo(getLastDesiredPosition().minus(Constants.constElevator.DEADZONE_DISTANCE)) > 0) &&
           getElevatorPosition().compareTo(getLastDesiredPosition().plus(Constants.constElevator.DEADZONE_DISTANCE)) < 0;
     }
@@ -127,6 +127,9 @@ public class Elevator extends SubsystemBase {
         break;
       case L4:
         imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/ReefL4.png";
+        break;
+      default:
+        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/image.png";
         break;
     }
     image = Imgcodecs.imread(imagePath);
