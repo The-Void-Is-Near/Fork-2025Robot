@@ -3,16 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DeepClimb extends SubsystemBase {
   /** Creates a new TeleopDeepClimb. */
   public DeepClimb() {
-    TalonFX deepClimbM = new TalonFX(15);
+    // TalonFX deepClimbM = new TalonFX(15);
   }
   public void Rotate(float theta){
-    DeepClimb.
+    // DeepClimb.
   }
 
   @Override

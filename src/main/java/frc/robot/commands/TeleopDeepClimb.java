@@ -2,6 +2,7 @@
 
 package frc.robot.commands;
 import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class TeleopDeepClimb extends Command {
@@ -14,7 +15,7 @@ public class TeleopDeepClimb extends Command {
   }
   @Override
   public void execute() {
-    deepClimbM.Rotate(theta);
+    // deepClimbM.Rotate(theta);
   }
 
   @Override

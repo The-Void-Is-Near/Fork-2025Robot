@@ -84,7 +84,7 @@ public class Elevator extends SubsystemBase {
     if (Robot.isSimulation()) {
       return true;
     } else {
-      return (getElevatorPosition()
+      return (getElevatorPosition() //Checking if the move request set the elevator in the correct position (after movement).
           .compareTo(getLastDesiredPosition().minus(Constants.constElevator.DEADZONE_DISTANCE)) > 0) &&
           getElevatorPosition().compareTo(getLastDesiredPosition().plus(Constants.constElevator.DEADZONE_DISTANCE)) < 0;
     }
@@ -108,6 +108,7 @@ public class Elevator extends SubsystemBase {
     lastDesiredPosition = height;
   }
 
+<<<<<<< HEAD
   // public void setReefDisplay() {
   // switch (currentReefPos) {
   // case L1:
@@ -130,6 +131,29 @@ public class Elevator extends SubsystemBase {
   // image = Imgcodecs.imread(imagePath);
   // outputStream.putFrame(image);
   // }
+=======
+  public void setReefDisplay() {
+    switch (currentReefPos) {
+      case L1:
+        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/ReefL1.png";
+        break;
+      case L2:
+        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/ReefL2.png";
+        break;
+      case L3:
+        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/ReefL3.png";
+        break;
+      case L4:
+        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/ReefL4.png";
+        break;
+      default:
+        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/image.png";
+        break;
+    }
+    image = Imgcodecs.imread(imagePath);
+    outputStream.putFrame(image);
+  }
+>>>>>>> main
 
   public void setReef(boolean invert) {
     switch (currentReefPos) {
