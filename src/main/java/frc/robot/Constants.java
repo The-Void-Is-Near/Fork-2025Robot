@@ -26,7 +26,7 @@ public final class Constants {
     public static final double STICK_DEADBAND = 0.1;
 
     public static final class Swerve {
-        public static final int PIGEON_ID = 1;
+        public static final int PIGEON_ID = 0;
 
         public static final COTSTalonFXSwerveConstants CHOSEN_MODULE = COTSTalonFXSwerveConstants.SDS.MK4n
                 .KrakenX60(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L3);
@@ -109,7 +109,7 @@ public final class Constants {
             public static final int DRIVE_MOTOR_ID = 7;
             public static final int ANGLE_MOTOR_ID = 9;
             public static final int CAN_CODER_ID = 8;
-            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(0.429443);
+            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(0.100342);
             public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
                     ANGLE_MOTOR_ID,
                     CAN_CODER_ID, ANGLE_OFFSET);
@@ -120,7 +120,7 @@ public final class Constants {
             public static final int DRIVE_MOTOR_ID = 4;
             public static final int ANGLE_MOTOR_ID = 6;
             public static final int CAN_CODER_ID = 5;
-            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(-0.458496);
+            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(-0.081543);
             public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
                     ANGLE_MOTOR_ID,
                     CAN_CODER_ID, ANGLE_OFFSET);
@@ -131,7 +131,7 @@ public final class Constants {
             public static final int DRIVE_MOTOR_ID = 10;
             public static final int ANGLE_MOTOR_ID = 12;
             public static final int CAN_CODER_ID = 11;
-            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(0.323975);
+            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(-0.374268);
             public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
                     ANGLE_MOTOR_ID,
                     CAN_CODER_ID, ANGLE_OFFSET);
@@ -142,7 +142,7 @@ public final class Constants {
             public static final int DRIVE_MOTOR_ID = 1;
             public static final int ANGLE_MOTOR_ID = 3;
             public static final int CAN_CODER_ID = 2;
-            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(-0.027344);
+            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromRotations(-0.068115);
             public static final SwerveModuleConstants CONSTANTS = new SwerveModuleConstants(DRIVE_MOTOR_ID,
                     ANGLE_MOTOR_ID,
                     CAN_CODER_ID, ANGLE_OFFSET);
@@ -156,17 +156,17 @@ public final class Constants {
             ELEVATOR_CONFIG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
             ELEVATOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-            ELEVATOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Units.Inches.of(66).in(Units.Inches);
+            ELEVATOR_CONFIG.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Units.Inches.of(72).in(Units.Inches);
             ELEVATOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
             ELEVATOR_CONFIG.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Units.Inches.of(0)
                     .in(Units.Inches);
 
             ELEVATOR_CONFIG.Slot0.GravityType = GravityTypeValue.Elevator_Static;
             // Elevator motors will provide feedback in INCHES the carriage has moved
-            ELEVATOR_CONFIG.Feedback.SensorToMechanismRatio = 0.4545;
+            ELEVATOR_CONFIG.Feedback.SensorToMechanismRatio = 0.4545; // 17 inches to ground
 
             ELEVATOR_CONFIG.Slot0.kG = 0.3; // Volts to overcome gravity
-            ELEVATOR_CONFIG.Slot0.kS = 0.4; // Volts to overcome static friction
+            ELEVATOR_CONFIG.Slot0.kS = 0.6; // Volts to overcome static friction
             ELEVATOR_CONFIG.Slot0.kV = 0.001; // Volts for a velocity target of 1 rps
             ELEVATOR_CONFIG.Slot0.kA = 0.001; // Volts for an acceleration of 1 rps/s
             ELEVATOR_CONFIG.Slot0.kP = 0.3;
@@ -182,7 +182,7 @@ public final class Constants {
     }
 
     public enum reefPosition {
-        // NONE,
+        NONE,
         L1,
         L2,
         L3,
