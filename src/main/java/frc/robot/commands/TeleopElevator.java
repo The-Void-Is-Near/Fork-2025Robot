@@ -10,7 +10,7 @@ import frc.robot.subsystems.Elevator;
 public class TeleopElevator extends Command {
   Elevator elevator;
   boolean invert;
-  /** Creates a new TeleopClimb. */
+  /** Creates a new TeleopElevator. */
   public TeleopElevator(Elevator elevator, boolean invert) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
