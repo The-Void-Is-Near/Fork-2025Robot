@@ -17,7 +17,10 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 // import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
@@ -26,7 +29,7 @@ public final class Constants {
     public static final double STICK_DEADBAND = 0.1;
 
     /* Intake Constants */
-    public static final class IntakeVals{
+    public static final class IntakeVals {
         public static final int motorID = 16;
     }
 
@@ -168,22 +171,52 @@ public final class Constants {
 
             ELEVATOR_CONFIG.Slot0.GravityType = GravityTypeValue.Elevator_Static;
             // Elevator motors will provide feedback in INCHES the carriage has moved
-            ELEVATOR_CONFIG.Feedback.SensorToMechanismRatio = 0.4545; // 17 inches to ground
+            ELEVATOR_CONFIG.Feedback.SensorToMechanismRatio = 0.343; // 17 inches to ground
 
             ELEVATOR_CONFIG.Slot0.kG = 0.3; // Volts to overcome gravity
             ELEVATOR_CONFIG.Slot0.kS = 0.6; // Volts to overcome static friction
             ELEVATOR_CONFIG.Slot0.kV = 0.001; // Volts for a velocity target of 1 rps
             ELEVATOR_CONFIG.Slot0.kA = 0.001; // Volts for an acceleration of 1 rps/s
-            ELEVATOR_CONFIG.Slot0.kP = 0.3;
+            ELEVATOR_CONFIG.Slot0.kP = 0.75;
             ELEVATOR_CONFIG.Slot0.kI = 0.0;
             ELEVATOR_CONFIG.Slot0.kD = 0.0;
 
-            ELEVATOR_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 350;
-            ELEVATOR_CONFIG.MotionMagic.MotionMagicAcceleration = 2500;
+            ELEVATOR_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 400;
+            ELEVATOR_CONFIG.MotionMagic.MotionMagicAcceleration = 1500;
+        }
+        public static TalonFXConfiguration COAST_MODE_CONFIGURATION = new TalonFXConfiguration();
+        static {
+            COAST_MODE_CONFIGURATION.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+            COAST_MODE_CONFIGURATION.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         }
         public static final Distance DEADZONE_DISTANCE = Units.Inches.of(1);
         public static final int LEFT_MOTOR_FOLLOWER_ID = 13;
         public static final int RIGHT_MOTOR_LEADER_ID = 14;
+
+        public static final AngularVelocity MANUAL_ZEROING_START_VELOCITY = Units.RotationsPerSecond.of(5);
+        public static final AngularVelocity MANUAL_ZEROING_DELTA_VELOCITY = Units.RotationsPerSecond.of(5);
+
+        /**
+         * The voltage supplied to the motor in order to zero
+         */
+        public static final Voltage ZEROING_VOLTAGE = Units.Volts.of(-1);
+        /**
+         * The value that the motor reports when it is at it's zeroed position. This
+         * may not necessarily be 0 due to mechanical slop
+         */
+        public static final Distance ZEROED_POS = Units.Meters.of(0);
+
+        /**
+         * The velocity that the motor goes at once it has zeroed (and can no longer
+         * continue in that direction)
+         */
+        public static final AngularVelocity ZEROED_VELOCITY = Units.RotationsPerSecond.of(0.2);
+
+        /**
+         * The elapsed time required to consider the motor as zeroed
+         */
+        public static final Time ZEROED_TIME = Units.Seconds.of(1);
+        public static final Time ZEROING_TIMEOUT = Units.Seconds.of(3);
     }
 
     public enum reefPosition {

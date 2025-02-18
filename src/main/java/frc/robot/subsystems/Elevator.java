@@ -84,7 +84,8 @@ public class Elevator extends SubsystemBase {
     if (Robot.isSimulation()) {
       return true;
     } else {
-      return (getElevatorPosition() //Checking if the move request set the elevator in the correct position (after movement).
+      return (getElevatorPosition() // Checking if the move request set the elevator in the correct position (after
+                                    // movement).
           .compareTo(getLastDesiredPosition().minus(Constants.constElevator.DEADZONE_DISTANCE)) > 0) &&
           getElevatorPosition().compareTo(getLastDesiredPosition().plus(Constants.constElevator.DEADZONE_DISTANCE)) < 0;
     }
@@ -108,7 +109,16 @@ public class Elevator extends SubsystemBase {
     lastDesiredPosition = height;
   }
 
-<<<<<<< HEAD
+  public void setCoastMode(Boolean coastMode) {
+    if (coastMode) {
+      rightMotorLeader.getConfigurator().apply(constElevator.COAST_MODE_CONFIGURATION);
+      leftMotorFollower.getConfigurator().apply(constElevator.COAST_MODE_CONFIGURATION);
+    } else {
+      rightMotorLeader.getConfigurator().apply(constElevator.ELEVATOR_CONFIG);
+      leftMotorFollower.getConfigurator().apply(constElevator.ELEVATOR_CONFIG);
+    }
+  }
+
   // public void setReefDisplay() {
   // switch (currentReefPos) {
   // case L1:
@@ -131,29 +141,6 @@ public class Elevator extends SubsystemBase {
   // image = Imgcodecs.imread(imagePath);
   // outputStream.putFrame(image);
   // }
-=======
-  public void setReefDisplay() {
-    switch (currentReefPos) {
-      case L1:
-        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/ReefL1.png";
-        break;
-      case L2:
-        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/ReefL2.png";
-        break;
-      case L3:
-        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/ReefL3.png";
-        break;
-      case L4:
-        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/ReefL4.png";
-        break;
-      default:
-        imagePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/ReefDisplay/image.png";
-        break;
-    }
-    image = Imgcodecs.imread(imagePath);
-    outputStream.putFrame(image);
-  }
->>>>>>> main
 
   public void setReef(boolean invert) {
     switch (currentReefPos) {
@@ -226,7 +213,7 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator/Right/Current", rightMotorLeader.getSupplyCurrent().getValueAsDouble());
 
     SmartDashboard.putBoolean("Elevator/atSetpoint", isAtSetpoint());
-    SmartDashboard.putString("Elevator/Position", getElevatorPosition().toString());
-    SmartDashboard.putString("Elevator/LastPosition", getLastDesiredPosition().toString());
+    SmartDashboard.putNumber("Elevator/Position", getElevatorPosition().magnitude());
+    SmartDashboard.putNumber("Elevator/LastPosition", getLastDesiredPosition().magnitude());
   }
 }
