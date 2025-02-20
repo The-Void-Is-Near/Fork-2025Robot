@@ -55,7 +55,7 @@ public class Elevator extends SubsystemBase {
   // private Mat image;
   // String imagePath;
 
-  /** Creates a new Climber. */
+  /** Creates a new Elevator. */
   public Elevator() {
     leftMotorFollower = new TalonFX(Constants.constElevator.LEFT_MOTOR_FOLLOWER_ID, Constants.CAN_BUS_NAME);
     rightMotorLeader = new TalonFX(Constants.constElevator.RIGHT_MOTOR_LEADER_ID, Constants.CAN_BUS_NAME);
@@ -168,6 +168,10 @@ public class Elevator extends SubsystemBase {
                         : desiredReefPos == reefPosition.L4 ? 60.0 : 0.0));
     currentReefPos = desiredReefPos;
     // setReefDisplay();
+  }
+
+  public reefPosition getReefPosition() {
+    return currentReefPos;
   }
 
   public void setNeutral() {

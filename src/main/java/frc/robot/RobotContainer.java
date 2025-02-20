@@ -13,10 +13,12 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.TeleopElevator;
+import frc.robot.commands.TeleopOuttake;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.zeroing.ManualZeroElevator;
 import frc.robot.commands.zeroing.ZeroElevator;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Swerve;
 
@@ -33,6 +35,7 @@ public class RobotContainer {
         /* Subsystems */
         private final Swerve s_Swerve = new Swerve();
         public final Elevator elevator = new Elevator();
+        public final Intake intake = new Intake();
         public final Limelight limelight = new Limelight();
 
         /* PathPlanner */
@@ -53,10 +56,12 @@ public class RobotContainer {
         // XboxController.Button.kLeftBumper.value); // Fix to Left Num
         // private final JoystickButton alignRButton = new JoystickButton(driver,
         // XboxController.Button.kRightBumper.value); // Fix to Right Num
-        private final JoystickButton extendElevatorButton = new JoystickButton(driver,
+        private final JoystickButton extendElevator = new JoystickButton(driver,
                         XboxController.Button.kRightBumper.value);
-        private final JoystickButton retractElevatorButton = new JoystickButton(driver,
+        private final JoystickButton retractElevator = new JoystickButton(driver,
                         XboxController.Button.kLeftBumper.value);
+        private final JoystickButton outtake = new JoystickButton(driver,
+                        XboxController.Button.kA.value);
         private final JoystickButton zeroSubsystem = new JoystickButton(driver, XboxController.Button.kStart.value);
 
         Command manualZeroSubsystems = new ManualZeroElevator(elevator)
@@ -95,10 +100,13 @@ public class RobotContainer {
                 zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
                 // alignRButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, true));
                 // alignLButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, false));
-                extendElevatorButton.onTrue(new TeleopElevator(elevator, false).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-                retractElevatorButton.onTrue(new TeleopElevator(elevator, true).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+                extendElevator.onTrue(new TeleopElevator(elevator, false)
+                                .withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+                retractElevator.onTrue(new TeleopElevator(elevator, true)
+                                .withInterruptBehavior(InterruptionBehavior.kCancelSelf));
                 zeroSubsystem.onTrue(new ZeroElevator(elevator)
                                 .withTimeout(Constants.constElevator.ZEROING_TIMEOUT.in(Units.Seconds)));
+                outtake.onTrue(new TeleopOuttake(intake));
         }
 
         /**
@@ -107,7 +115,7 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                // return autoChooser.getSelected();
-                return null;
+                return autoChooser.getSelected();
+                // return null;
         }
 }

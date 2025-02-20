@@ -4,12 +4,23 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 
 public class TeleopElevator extends Command {
   Elevator elevator;
+  Intake intake;
   boolean invert;
+
+  Command outtake = new SequentialCommandGroup(
+      new InstantCommand(() -> intake.setPosition(Units.Inches.of(6))),
+      new InstantCommand(() -> intake.setPosition(Units.Inches.of(-1))));
+
   /** Creates a new TeleopElevator. */
   public TeleopElevator(Elevator elevator, boolean invert) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -21,17 +32,21 @@ public class TeleopElevator extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    if(elevator.getReefPosition() == Constants.reefPosition.NONE && invert == false) {
+      outtake.schedule();
+    }
     elevator.setReef(invert);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override

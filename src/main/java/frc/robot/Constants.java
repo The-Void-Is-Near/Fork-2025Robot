@@ -3,6 +3,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -29,8 +30,19 @@ public final class Constants {
     public static final double STICK_DEADBAND = 0.1;
 
     /* Intake Constants */
-    public static final class IntakeVals {
-        public static final int motorID = 16;
+    public static final class constIntake {
+        public static TalonFXSConfiguration INTAKE_CONFIG = new TalonFXSConfiguration();
+        static {
+            INTAKE_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            INTAKE_CONFIG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+            // Inches the outside of the wheel has moved
+            INTAKE_CONFIG.ExternalFeedback.SensorToMechanismRatio = 1.16878980892;
+            INTAKE_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 400;
+            INTAKE_CONFIG.MotionMagic.MotionMagicAcceleration = 1500;
+        }
+        public static final int MOTOR_ID = 16;
+        public static final double OUTTAKE_VOLTAGE = 3;
     }
 
     public static final class Swerve {
