@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.TeleopElevator;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.zeroing.ManualZeroElevator;
+import frc.robot.commands.zeroing.ZeroElevator;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Swerve;
@@ -55,7 +57,7 @@ public class RobotContainer {
                         XboxController.Button.kRightBumper.value);
         private final JoystickButton retractElevatorButton = new JoystickButton(driver,
                         XboxController.Button.kLeftBumper.value);
-        // private final JoystickButton zeroSubsystem = new JoystickButton(driver, XboxController.Button.kStart.value);
+        private final JoystickButton zeroSubsystem = new JoystickButton(driver, XboxController.Button.kStart.value);
 
         Command manualZeroSubsystems = new ManualZeroElevator(elevator)
                         .ignoringDisable(true).withName("ManualZeroSubsystems");
@@ -95,8 +97,8 @@ public class RobotContainer {
                 // alignLButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, false));
                 extendElevatorButton.onTrue(new TeleopElevator(elevator, false).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
                 retractElevatorButton.onTrue(new TeleopElevator(elevator, true).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-                // zeroSubsystem.onTrue(new ZeroElevator(elevator)
-                //                 .withTimeout(Constants.constElevator.ZEROING_TIMEOUT.in(Units.Seconds)));
+                zeroSubsystem.onTrue(new ZeroElevator(elevator)
+                                .withTimeout(Constants.constElevator.ZEROING_TIMEOUT.in(Units.Seconds)));
         }
 
         /**
