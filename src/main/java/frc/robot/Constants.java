@@ -30,7 +30,6 @@ public final class Constants {
     public static final double STICK_DEADBAND = 0.1;
 
     /* Intake Constants */
-<<<<<<< Updated upstream
     public static final class constIntake {
         public static TalonFXSConfiguration INTAKE_CONFIG = new TalonFXSConfiguration();
         static {
@@ -44,10 +43,9 @@ public final class Constants {
         }
         public static final int MOTOR_ID = 16;
         public static final double OUTTAKE_VOLTAGE = 3;
-=======
+    }
     public static final class IntakeVals {
         public static final int motorID = 17;
->>>>>>> Stashed changes
     }
 
     public static final class Swerve {
