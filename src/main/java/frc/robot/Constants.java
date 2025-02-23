@@ -30,6 +30,7 @@ public final class Constants {
     public static final double STICK_DEADBAND = 0.1;
 
     /* Intake Constants */
+<<<<<<< Updated upstream
     public static final class constIntake {
         public static TalonFXSConfiguration INTAKE_CONFIG = new TalonFXSConfiguration();
         static {
@@ -43,6 +44,10 @@ public final class Constants {
         }
         public static final int MOTOR_ID = 16;
         public static final double OUTTAKE_VOLTAGE = 3;
+=======
+    public static final class IntakeVals {
+        public static final int motorID = 17;
+>>>>>>> Stashed changes
     }
 
     public static final class Swerve {
@@ -185,16 +190,16 @@ public final class Constants {
             // Elevator motors will provide feedback in INCHES the carriage has moved
             ELEVATOR_CONFIG.Feedback.SensorToMechanismRatio = 0.343; // 17 inches to ground
 
-            ELEVATOR_CONFIG.Slot0.kG = 0.3; // Volts to overcome gravity
+            ELEVATOR_CONFIG.Slot0.kG = 0.55; // Volts to overcome gravity
             ELEVATOR_CONFIG.Slot0.kS = 0.6; // Volts to overcome static friction
             ELEVATOR_CONFIG.Slot0.kV = 0.001; // Volts for a velocity target of 1 rps
             ELEVATOR_CONFIG.Slot0.kA = 0.001; // Volts for an acceleration of 1 rps/s
-            ELEVATOR_CONFIG.Slot0.kP = 0.75;
-            ELEVATOR_CONFIG.Slot0.kI = 0.0;
-            ELEVATOR_CONFIG.Slot0.kD = 0.0;
+            ELEVATOR_CONFIG.Slot0.kP = 0.95;
+            ELEVATOR_CONFIG.Slot0.kI = 0.01;
+            ELEVATOR_CONFIG.Slot0.kD = 0.0095;
 
             ELEVATOR_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 400;
-            ELEVATOR_CONFIG.MotionMagic.MotionMagicAcceleration = 1500;
+            ELEVATOR_CONFIG.MotionMagic.MotionMagicAcceleration = 500;
         }
         public static TalonFXConfiguration COAST_MODE_CONFIGURATION = new TalonFXConfiguration();
         static {
