@@ -18,13 +18,13 @@ public class TeleopElevator extends Command {
   boolean invert;
 
   Command outtake = new SequentialCommandGroup(
-      new InstantCommand(() -> intake.setPosition(Units.Inches.of(6))),
-      new InstantCommand(() -> intake.setPosition(Units.Inches.of(-1))));
+      new InstantCommand(() -> intake.setPosition(Units.Inches.of(2.5))));
 
   /** Creates a new TeleopElevator. */
-  public TeleopElevator(Elevator elevator, boolean invert) {
+  public TeleopElevator(Elevator elevator, Intake intake, boolean invert) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator);
+    addRequirements(elevator, intake);
+    this.intake = intake;
     this.elevator = elevator;
     this.invert = invert;
   }
@@ -32,7 +32,7 @@ public class TeleopElevator extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if(elevator.getReefPosition() == Constants.reefPosition.NONE && invert == false) {
+    if(elevator.getReefPosition() == Constants.reefPosition.L3 && invert == false) {
       outtake.schedule();
     }
     elevator.setReef(invert);

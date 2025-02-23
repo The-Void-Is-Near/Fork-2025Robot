@@ -8,6 +8,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -21,13 +22,23 @@ public class Intake extends SubsystemBase {
   public Intake() {
     intakeM = new TalonFXS(Constants.constIntake.MOTOR_ID, Constants.CAN_BUS_NAME);
     intakeM.getConfigurator().apply(Constants.constIntake.INTAKE_CONFIG);
+    motionRequest = new MotionMagicVoltage(0);
   }
 
   public void setPosition(Distance inches) {
     intakeM.setControl(motionRequest.withPosition(Units.Inches.of(intakeM.getPosition().getValueAsDouble()).plus(inches).in(Units.Inches)));
   }
 
+  public Distance getIntakePosition() {
+    return Units.Inches.of(intakeM.getPosition().getValueAsDouble());
+  }
+
   public void setVoltage(double voltageOut) {
     intakeM.setVoltage(voltageOut);
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Intake/Position", getIntakePosition().magnitude());
   }
 }

@@ -162,10 +162,10 @@ public class Elevator extends SubsystemBase {
     }
     setPosition(Units.Inches.of(
         desiredReefPos == reefPosition.NONE ? 0.0
-            : desiredReefPos == reefPosition.L1 ? 10.0
-                : desiredReefPos == reefPosition.L2 ? 20.0
-                    : desiredReefPos == reefPosition.L3 ? 40.0
-                        : desiredReefPos == reefPosition.L4 ? 60.0 : 0.0));
+            : desiredReefPos == reefPosition.L1 ? 20.0
+                : desiredReefPos == reefPosition.L2 ? 27.5
+                    : desiredReefPos == reefPosition.L3 ? 42.5
+                        : desiredReefPos == reefPosition.L4 ? 65.0 : 0.0));
     currentReefPos = desiredReefPos;
     // setReefDisplay();
   }

@@ -1,15 +1,16 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.constIntake;
 import frc.robot.subsystems.Intake;
 
-public class TeleopOuttake extends Command {
+public class TeleopIntake extends Command {
   /** Creates a new TeleopOuttake. */
   Intake intake;
 
-  public TeleopOuttake(Intake intake) {
+  public TeleopIntake(Intake intake) {
     this.intake = intake;
   }
 
@@ -19,12 +20,13 @@ public class TeleopOuttake extends Command {
 
   @Override
   public void execute() {
-    intake.setVoltage(constIntake.OUTTAKE_VOLTAGE);
+    intake.setVoltage(constIntake.INTAKE_VOLTAGE);
   }
 
   @Override
   public void end(boolean interrupted) {
     intake.setVoltage(0);
+    intake.setPosition(Units.Inches.of(2));
   }
 
   @Override

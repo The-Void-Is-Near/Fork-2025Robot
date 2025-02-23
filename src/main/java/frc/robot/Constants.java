@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.pathplanner.lib.config.ModuleConfig;
@@ -28,25 +29,6 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
     public static final String CAN_BUS_NAME = "*";
     public static final double STICK_DEADBAND = 0.1;
-
-    /* Intake Constants */
-    public static final class constIntake {
-        public static TalonFXSConfiguration INTAKE_CONFIG = new TalonFXSConfiguration();
-        static {
-            INTAKE_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-            INTAKE_CONFIG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
-            // Inches the outside of the wheel has moved
-            INTAKE_CONFIG.ExternalFeedback.SensorToMechanismRatio = 1.16878980892;
-            INTAKE_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 400;
-            INTAKE_CONFIG.MotionMagic.MotionMagicAcceleration = 1500;
-        }
-        public static final int MOTOR_ID = 16;
-        public static final double OUTTAKE_VOLTAGE = 3;
-    }
-    public static final class IntakeVals {
-        public static final int motorID = 17;
-    }
 
     public static final class Swerve {
         public static final int PIGEON_ID = 0;
@@ -172,6 +154,33 @@ public final class Constants {
         }
     }
 
+    /* Intake Constants */
+    public static final class constIntake {
+        public static TalonFXSConfiguration INTAKE_CONFIG = new TalonFXSConfiguration();
+        static {
+            INTAKE_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            INTAKE_CONFIG.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+            INTAKE_CONFIG.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
+
+            INTAKE_CONFIG.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+            INTAKE_CONFIG.Slot0.kS = 0.6; // Volts to overcome static friction
+            INTAKE_CONFIG.Slot0.kG = 0;
+            INTAKE_CONFIG.Slot0.kV = 0.001; // Volts for a velocity target of 1 rps
+            INTAKE_CONFIG.Slot0.kA = 0.001; // Volts for an acceleration of 1 rps/s
+            INTAKE_CONFIG.Slot0.kP = 0.95;
+            INTAKE_CONFIG.Slot0.kI = 0.01;
+            INTAKE_CONFIG.Slot0.kD = 0.0095;
+
+            // Inches the outside of the wheel has moved
+            INTAKE_CONFIG.ExternalFeedback.SensorToMechanismRatio = 0.31847;
+            INTAKE_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 400;
+            INTAKE_CONFIG.MotionMagic.MotionMagicAcceleration = 1500;
+        }
+        public static final int MOTOR_ID = 17;
+        public static final double OUTTAKE_VOLTAGE = 3;
+        public static final double INTAKE_VOLTAGE = -3;
+    }
+
     public static class constElevator {
         public static TalonFXConfiguration ELEVATOR_CONFIG = new TalonFXConfiguration();
         static {
@@ -188,13 +197,13 @@ public final class Constants {
             // Elevator motors will provide feedback in INCHES the carriage has moved
             ELEVATOR_CONFIG.Feedback.SensorToMechanismRatio = 0.343; // 17 inches to ground
 
-            ELEVATOR_CONFIG.Slot0.kG = 0.55; // Volts to overcome gravity
-            ELEVATOR_CONFIG.Slot0.kS = 0.6; // Volts to overcome static friction
+            ELEVATOR_CONFIG.Slot0.kG = 0.75; // Volts to overcome gravity
+            ELEVATOR_CONFIG.Slot0.kS = 0.5; // Volts to overcome static friction
             ELEVATOR_CONFIG.Slot0.kV = 0.001; // Volts for a velocity target of 1 rps
             ELEVATOR_CONFIG.Slot0.kA = 0.001; // Volts for an acceleration of 1 rps/s
-            ELEVATOR_CONFIG.Slot0.kP = 0.95;
-            ELEVATOR_CONFIG.Slot0.kI = 0.01;
-            ELEVATOR_CONFIG.Slot0.kD = 0.0095;
+            ELEVATOR_CONFIG.Slot0.kP = 1.6;
+            ELEVATOR_CONFIG.Slot0.kI = 0.001;
+            ELEVATOR_CONFIG.Slot0.kD = 0.1;
 
             ELEVATOR_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 400;
             ELEVATOR_CONFIG.MotionMagic.MotionMagicAcceleration = 500;
@@ -205,6 +214,7 @@ public final class Constants {
             COAST_MODE_CONFIGURATION.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         }
         public static final Distance DEADZONE_DISTANCE = Units.Inches.of(1);
+        public static final double MULTIPLIER_DEADZONE = 0.1;
         public static final int LEFT_MOTOR_FOLLOWER_ID = 13;
         public static final int RIGHT_MOTOR_LEADER_ID = 14;
 

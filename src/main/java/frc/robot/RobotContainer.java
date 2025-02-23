@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.TeleopElevator;
+import frc.robot.commands.TeleopIntake;
 import frc.robot.commands.TeleopOuttake;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.zeroing.ManualZeroElevator;
@@ -60,8 +61,10 @@ public class RobotContainer {
                         XboxController.Button.kRightBumper.value);
         private final JoystickButton retractElevator = new JoystickButton(driver,
                         XboxController.Button.kLeftBumper.value);
-        private final JoystickButton outtake = new JoystickButton(driver,
+        private final JoystickButton outtakeButton = new JoystickButton(driver,
                         XboxController.Button.kA.value);
+        private final JoystickButton intakeButton = new JoystickButton(driver,
+                        XboxController.Button.kB.value);
         private final JoystickButton zeroSubsystem = new JoystickButton(driver, XboxController.Button.kStart.value);
 
         Command manualZeroSubsystems = new ManualZeroElevator(elevator)
@@ -74,6 +77,7 @@ public class RobotContainer {
                 s_Swerve.setDefaultCommand(
                                 new TeleopSwerve(
                                                 s_Swerve,
+                                                elevator,
                                                 () -> -driver.getRawAxis(translationAxis),
                                                 () -> -driver.getRawAxis(strafeAxis),
                                                 () -> -driver.getRawAxis(rotationAxis),
@@ -100,13 +104,14 @@ public class RobotContainer {
                 zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
                 // alignRButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, true));
                 // alignLButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, false));
-                extendElevator.onTrue(new TeleopElevator(elevator, false)
+                extendElevator.onTrue(new TeleopElevator(elevator, intake, false)
                                 .withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-                retractElevator.onTrue(new TeleopElevator(elevator, true)
+                retractElevator.onTrue(new TeleopElevator(elevator, intake, true)
                                 .withInterruptBehavior(InterruptionBehavior.kCancelSelf));
                 zeroSubsystem.onTrue(new ZeroElevator(elevator)
                                 .withTimeout(Constants.constElevator.ZEROING_TIMEOUT.in(Units.Seconds)));
-                outtake.onTrue(new TeleopOuttake(intake));
+                outtakeButton.whileTrue(new TeleopOuttake(intake));
+                intakeButton.whileTrue(new TeleopIntake(intake));
         }
 
         /**
