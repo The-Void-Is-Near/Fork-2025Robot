@@ -2,9 +2,9 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.constVision;
+import frc.robot.commands.AddVisionMeasurement;
 import frc.robot.commands.TeleopElevator;
 import frc.robot.commands.TeleopIntake;
 import frc.robot.commands.TeleopOuttake;
@@ -43,7 +46,7 @@ public class RobotContainer {
         private final SendableChooser<Command> autoChooser;
 
         /* Controllers */
-        private final Joystick driver = new Joystick(0);
+        private final XboxController driver = new XboxController(0);
 
         /* Drive Controls */
         private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -53,6 +56,8 @@ public class RobotContainer {
         /* Driver Buttons */
         private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
         private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kStart.value);
+        public Trigger btn_LeftTrigger = new Trigger(() -> driver.getLeftTriggerAxis() > 0.7);
+        public Trigger btn_RightTrigger = new Trigger(() -> driver.getRightTriggerAxis() > 0.7);
         // private final JoystickButton alignLButton = new JoystickButton(driver,
         // XboxController.Button.kLeftBumper.value); // Fix to Left Num
         // private final JoystickButton alignRButton = new JoystickButton(driver,
@@ -70,6 +75,29 @@ public class RobotContainer {
         Command manualZeroSubsystems = new ManualZeroElevator(elevator)
                         .ignoringDisable(true).withName("ManualZeroSubsystems");
 
+        public Command AddVisionMeasurement() {
+                return new AddVisionMeasurement(s_Swerve, limelight)
+                                .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
+                                .ignoringDisable(true);
+        }
+
+        public void setMegaTag2(boolean setMegaTag2) {
+
+                if (setMegaTag2) {
+                        s_Swerve.swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(
+                                        constVision.MEGA_TAG2_STD_DEVS_POSITION,
+                                        constVision.MEGA_TAG2_STD_DEVS_POSITION,
+                                        constVision.MEGA_TAG2_STD_DEVS_HEADING));
+                } else {
+                        // Use MegaTag 1
+                        s_Swerve.swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(
+                                        constVision.MEGA_TAG1_STD_DEVS_POSITION,
+                                        constVision.MEGA_TAG1_STD_DEVS_POSITION,
+                                        constVision.MEGA_TAG1_STD_DEVS_HEADING));
+                }
+                limelight.setMegaTag2(setMegaTag2);
+        }
+
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
@@ -81,7 +109,9 @@ public class RobotContainer {
                                                 () -> -driver.getRawAxis(translationAxis),
                                                 () -> -driver.getRawAxis(strafeAxis),
                                                 () -> -driver.getRawAxis(rotationAxis),
-                                                () -> robotCentric.getAsBoolean()));
+                                                () -> robotCentric.getAsBoolean(),
+                                                () -> btn_LeftTrigger.getAsBoolean(),
+                                                () -> btn_RightTrigger.getAsBoolean()));
 
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);

@@ -4,7 +4,12 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -17,10 +22,10 @@ public class TeleopSwerve extends Command {
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
-    private BooleanSupplier robotCentricSup;
+    private BooleanSupplier robotCentricSup, leftReef, rightReef;
     double elevatorMultiplier;
     Elevator elevator;
-    public TeleopSwerve(Swerve s_Swerve, Elevator elevator, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup) {
+    public TeleopSwerve(Swerve s_Swerve, Elevator elevator, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier leftReef, BooleanSupplier rightReef) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
         this.elevator = elevator;
@@ -28,6 +33,8 @@ public class TeleopSwerve extends Command {
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
         this.robotCentricSup = robotCentricSup;
+        this.leftReef = leftReef;
+        this.rightReef = rightReef;
     }
 
     @Override
@@ -42,6 +49,72 @@ public class TeleopSwerve extends Command {
         SmartDashboard.putNumber("Rotation", rotationVal);
         SmartDashboard.putNumber("Elevator/Elevator Multiplier", elevatorMultiplier);
 
+    // -- Velocities --
+    LinearVelocity xVelocity = Units.MetersPerSecond.of(strafeSup.getAsDouble() * elevatorMultiplier);
+    LinearVelocity yVelocity = Units.MetersPerSecond.of(translationSup.getAsDouble() * elevatorMultiplier);
+    AngularVelocity rVelocity = Units.RadiansPerSecond
+        .of(-rotationSup.getAsDouble() * Constants.Swerve.TURN_SPEED.in(Units.RadiansPerSecond)
+            * elevatorMultiplier);
+
+    // // -- Coral Station --
+    // if (leftCoralStationFar.getAsBoolean()) {
+    //   Pose2d desiredCoralStation = Constants.constField.POSES.LEFT_CORAL_STATION_FAR;
+    //   Distance coralStationDistance = Units.Meters
+    //       .of(s_Swerve.getPose().getTranslation().getDistance(desiredCoralStation.getTranslation()));
+
+    //   s_Swerve.autoAlign(coralStationDistance, desiredCoralStation, xVelocity, yVelocity, rVelocity,
+    //       transMultiplier, isOpenLoop,
+    //       Constants.constDrivetrain.TELEOP_AUTO_ALIGN.MAX_AUTO_DRIVE_CORAL_STATION_DISTANCE,
+    //       DriverState.CORAL_STATION_AUTO_DRIVING, DriverState.CORAL_STATION_ROTATION_SNAPPING, subStateMachine);
+    // }
+
+    // else if (leftCoralStationNear.getAsBoolean()) {
+    //   Pose2d desiredCoralStation = Constants.constField.POSES.LEFT_CORAL_STATION_NEAR;
+    //   Distance coralStationDistance = Units.Meters
+    //       .of(s_Swerve.getPose().getTranslation().getDistance(desiredCoralStation.getTranslation()));
+
+    //   s_Swerve.autoAlign(coralStationDistance, desiredCoralStation, xVelocity, yVelocity, rVelocity,
+    //       transMultiplier, isOpenLoop,
+    //       Constants.constDrivetrain.TELEOP_AUTO_ALIGN.MAX_AUTO_DRIVE_CORAL_STATION_DISTANCE,
+    //       DriverState.CORAL_STATION_AUTO_DRIVING, DriverState.CORAL_STATION_ROTATION_SNAPPING, subStateMachine);
+    // }
+
+    // else if (rightCoralStationFar.getAsBoolean()) {
+    //   Pose2d desiredCoralStation = Constants.constField.POSES.RIGHT_CORAL_STATION_FAR;
+    //   Distance coralStationDistance = Units.Meters
+    //       .of(s_Swerve.getPose().getTranslation().getDistance(desiredCoralStation.getTranslation()));
+
+    //   s_Swerve.autoAlign(coralStationDistance, desiredCoralStation, xVelocity, yVelocity, rVelocity,
+    //       transMultiplier, isOpenLoop,
+    //       Constants.constDrivetrain.TELEOP_AUTO_ALIGN.MAX_AUTO_DRIVE_CORAL_STATION_DISTANCE,
+    //       DriverState.CORAL_STATION_AUTO_DRIVING, DriverState.CORAL_STATION_ROTATION_SNAPPING, subStateMachine);
+    // }
+
+    // else if (rightCoralStationNear.getAsBoolean()) {
+    //   Pose2d desiredCoralStation = Constants.constField.POSES.RIGHT_CORAL_STATION_NEAR;
+    //   Distance coralStationDistance = Units.Meters
+    //       .of(s_Swerve.getPose().getTranslation().getDistance(desiredCoralStation.getTranslation()));
+
+    //   s_Swerve.autoAlign(coralStationDistance, desiredCoralStation, xVelocity, yVelocity, rVelocity,
+    //       transMultiplier, isOpenLoop,
+    //       Constants.constDrivetrain.TELEOP_AUTO_ALIGN.MAX_AUTO_DRIVE_CORAL_STATION_DISTANCE,
+    //       DriverState.CORAL_STATION_AUTO_DRIVING, DriverState.CORAL_STATION_ROTATION_SNAPPING, subStateMachine);
+    // }
+
+    // -- Controlling --
+    if (leftReef.getAsBoolean() || rightReef.getAsBoolean()) {
+      // Reef auto-align is requested
+      Pose2d desiredReef = s_Swerve.getDesiredReef(leftReef.getAsBoolean());
+      Distance reefDistance = Units.Meters
+          .of(s_Swerve.getPose().getTranslation().getDistance(desiredReef.getTranslation()));
+
+      // Begin reef auto align (rotationally, automatically driving, or w/ a driver
+      // override)
+      s_Swerve.autoAlign(reefDistance, desiredReef, xVelocity, yVelocity, rVelocity, elevatorMultiplier,
+          true,
+          Constants.Swerve.TELEOP_AUTO_ALIGN.MAX_AUTO_DRIVE_REEF_DISTANCE);
+      ;
+    } else {
         /* Drive */
         s_Swerve.drive(
             new Translation2d(translationVal, strafeVal).times(Constants.Swerve.MAX_SPEED).times(elevatorMultiplier),
@@ -49,5 +122,6 @@ public class TeleopSwerve extends Command {
             !robotCentricSup.getAsBoolean(),
             true
         );
+    }
     }
 }

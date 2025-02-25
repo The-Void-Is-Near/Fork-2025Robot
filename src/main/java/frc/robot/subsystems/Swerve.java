@@ -1,11 +1,16 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*;
+
+import java.util.List;
+
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,15 +21,21 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.LimelightHelpers;
+import frc.robot.Constants.constField;
+import frc.robot.Constants.constVision;
 import frc.robot.SwerveModule;
 
 public class Swerve extends SubsystemBase {
@@ -35,8 +46,9 @@ public class Swerve extends SubsystemBase {
     public static boolean ampGyroCheck;
     public static int ampMultiplierCheck;
     private boolean doRejectUpdate;
-    public SwerveDrivePoseEstimator m_poseEstimator;
+    public SwerveDrivePoseEstimator swervePoseEstimator;
     public Pose2d mt2Pose;
+    Pose2d desiredAlignmentPose = Pose2d.kZero;
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.CAN_BUS_NAME);
@@ -80,6 +92,29 @@ public class Swerve extends SubsystemBase {
                 },
                 this // Reference to this subsystem to set requirements
         );
+
+        swervePoseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroYaw(),
+                getModulePositions(),
+                new Pose2d(), VecBuilder.fill(
+                        Constants.Swerve.MEASUREMENT_STD_DEVS_POS,
+                        Constants.Swerve.MEASUREMENT_STD_DEVS_POS,
+                        Constants.Swerve.MEASUREMENT_STD_DEV_HEADING),
+                VecBuilder.fill(
+                        constVision.MEGA_TAG2_STD_DEVS_POSITION,
+                        constVision.MEGA_TAG2_STD_DEVS_POSITION,
+                        constVision.MEGA_TAG2_STD_DEVS_HEADING));
+
+    }
+
+    public AngularVelocity getVelocityToRotate(Rotation2d desiredYaw) {
+        double yawSetpoint = Constants.Swerve.TELEOP_AUTO_ALIGN.TELEOP_AUTO_ALIGN_CONTROLLER.getThetaController()
+                .calculate(getRotation().getRadians(), desiredYaw.getRadians());
+
+        // limit the PID output to our maximum rotational speed
+        yawSetpoint = MathUtil.clamp(yawSetpoint, -Constants.Swerve.TURN_SPEED.in(Units.RadiansPerSecond),
+                Constants.Swerve.TURN_SPEED.in(Units.RadiansPerSecond));
+
+        return Units.RadiansPerSecond.of(yawSetpoint);
     }
 
     StructPublisher<Pose2d> robotPosePublisher = NetworkTableInstance.getDefault()
@@ -99,40 +134,40 @@ public class Swerve extends SubsystemBase {
                 mSwerveMods[3].getState());
     }
 
-    public SwerveDrivePoseEstimator getPoseEstimator() {
-        m_poseEstimator = new SwerveDrivePoseEstimator(
-                Constants.Swerve.swerveKinematics,
-                gyro.getRotation2d(),
-                new SwerveModulePosition[] {
-                        mSwerveMods[0].getPosition(),
-                        mSwerveMods[1].getPosition(),
-                        mSwerveMods[2].getPosition(),
-                        mSwerveMods[3].getPosition()
-                },
-                new Pose2d(),
-                VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-                VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
-        return m_poseEstimator;
+    // public void getLimelightPose() {
+    // LimelightHelpers.SetRobotOrientation("limelight-front",
+    // getPoseEstimator().getEstimatedPosition().getRotation().getDegrees(), 0, 0,
+    // 0, 0, 0);
+    // LimelightHelpers.PoseEstimate mt2 =
+    // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-front");
+    // if (Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if
+    // our angular velocity is greater
+    // // than 720 degrees per second, ignore
+    // // vision updates
+    // {
+    // doRejectUpdate = true;
+    // }
+    // if (mt2.tagCount == 0) {
+    // doRejectUpdate = true;
+    // }
+    // if (!doRejectUpdate) {
+    // swervePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7,
+    // 9999999));
+    // swervePoseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+    // mt2Pose = mt2.pose;
+    // }
+    // }
+
+    public double getGyroRate() {
+        return gyro.getAngularVelocityZWorld().getValueAsDouble();
     }
 
-    public void getLimelightPose() {
-        LimelightHelpers.SetRobotOrientation("limelight-front",
-                getPoseEstimator().getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-front");
-        if (Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater
-                                                                                // than 720 degrees per second, ignore
-                                                                                // vision updates
-        {
-            doRejectUpdate = true;
-        }
-        if (mt2.tagCount == 0) {
-            doRejectUpdate = true;
-        }
-        if (!doRejectUpdate) {
-            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-            m_poseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
-            mt2Pose = mt2.pose;
-        }
+    public void addVisionMeasurement(Pose2d estimatedPose, double timestamp) {
+        swervePoseEstimator.addVisionMeasurement(estimatedPose, timestamp);
+    }
+
+    public void updatePoseEstimator() {
+        swervePoseEstimator.updateWithTime(Timer.getFPGATimestamp(), getGyroYaw(), getModulePositions());
     }
 
     public void driveRobotRelative(ChassisSpeeds robotRelativeChassisSpeeds) {
@@ -160,6 +195,121 @@ public class Swerve extends SubsystemBase {
 
         for (SwerveModule mod : mSwerveMods) {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+        }
+    }
+
+    public Rotation2d getRotation() {
+        return swervePoseEstimator.getEstimatedPosition().getRotation();
+    }
+
+    public boolean isAtRotation(Rotation2d desiredRotation) {
+        return (getRotation().getMeasure()
+                .compareTo(desiredRotation.getMeasure()
+                        .minus(Constants.Swerve.TELEOP_AUTO_ALIGN.AT_ROTATION_TOLERANCE)) > 0)
+                &&
+                getRotation().getMeasure()
+                        .compareTo(desiredRotation.getMeasure()
+                                .plus(Constants.Swerve.TELEOP_AUTO_ALIGN.AT_ROTATION_TOLERANCE)) < 0;
+    }
+
+    public boolean isAtPosition(Pose2d desiredPose2d) {
+        return Units.Meters
+                .of(getPose().getTranslation().getDistance(desiredPose2d.getTranslation()))
+                .lte(Constants.Swerve.TELEOP_AUTO_ALIGN.AT_POINT_TOLERANCE);
+    }
+
+    public boolean atPose(Pose2d desiredPose) {
+        return isAtRotation(desiredPose.getRotation()) && isAtPosition(desiredPose);
+    }
+
+    /**
+     * Calculate the ChassisSpeeds needed to align the robot to the desired pose.
+     * This must be called every loop until you reach the desired pose.
+     * 
+     * @param desiredPose The desired pose to align to
+     * @return The ChassisSpeeds needed to align the robot to the desired pose
+     */
+    public ChassisSpeeds getAlignmentSpeeds(Pose2d desiredPose) {
+        desiredAlignmentPose = desiredPose;
+        // TODO: This might run better if instead of 0, we use
+        // Constants.Swerve.TELEOP_AUTO_ALIGN.DESIRED_AUTO_ALIGN_SPEED.in(Units.MetersPerSecond);.
+        // I dont know why. it might though
+        return Constants.Swerve.TELEOP_AUTO_ALIGN.TELEOP_AUTO_ALIGN_CONTROLLER.calculate(getPose(), desiredPose, 0,
+                desiredPose.getRotation());
+    }
+
+    /**
+     * Returns the closest reef branch to the robot.
+     * 
+     * @param leftBranchRequested If we are requesting to align to the left or right
+     *                            branch
+     * @return The desired reef branch face to align to
+     */
+    public Pose2d getDesiredReef(boolean leftBranchRequested) {
+        // Get the closest reef branch face using either branch on the face
+        List<Pose2d> reefPoses = constField.getReefPositions().get();
+        Pose2d currentPose = getPose();
+        Pose2d desiredReef = currentPose.nearest(reefPoses);
+        int closestReefIndex = reefPoses.indexOf(desiredReef);
+
+        // Invert faces on the back of the reef so they're always relative to the driver
+        if (closestReefIndex > 3 && closestReefIndex < 10) {
+            leftBranchRequested = !leftBranchRequested;
+        }
+
+        // If we were closer to the left branch but selected the right branch (or
+        // vice-versa), switch to our desired branch
+        if (leftBranchRequested && (closestReefIndex % 2 == 1)) {
+            desiredReef = reefPoses.get(closestReefIndex - 1);
+        } else if (!leftBranchRequested && (closestReefIndex % 2 == 0)) {
+            desiredReef = reefPoses.get(closestReefIndex + 1);
+        }
+        return desiredReef;
+    }
+
+    public AngularVelocity getVelocityToRotate(Angle desiredYaw) {
+        return getVelocityToRotate(Rotation2d.fromDegrees(desiredYaw.in(Units.Degrees)));
+    }
+
+    public Boolean isAligned() {
+        return desiredAlignmentPose.getTranslation().getDistance(getPose()
+                .getTranslation()) <= Constants.Swerve.TELEOP_AUTO_ALIGN.AUTO_ALIGNMENT_TOLERANCE.in(Units.Meters);
+    }
+
+    public void autoAlign(Distance distanceFromTarget, Pose2d desiredTarget,
+            LinearVelocity xVelocity,
+            LinearVelocity yVelocity,
+            AngularVelocity rVelocity, double elevatorMultiplier, boolean isOpenLoop, Distance maxAutoDriveDistance) {
+        desiredAlignmentPose = desiredTarget;
+
+        if (distanceFromTarget.gte(maxAutoDriveDistance)) {
+            // Rotational-only auto-align
+            drive(new Translation2d(xVelocity.in(Units.MetersPerSecond), yVelocity.in(Units.MetersPerSecond)),
+                    getVelocityToRotate(desiredTarget.getRotation()).in(Units.RadiansPerSecond), true, isOpenLoop);
+        } else {
+            // Full auto-align
+            ChassisSpeeds desiredChassisSpeeds = getAlignmentSpeeds(desiredTarget);
+
+            // Speed limit based on elevator height
+            LinearVelocity linearSpeedLimit = Constants.Swerve.MAX_SPEED_UNITS.times(elevatorMultiplier);
+            AngularVelocity angularSpeedLimit = Constants.Swerve.TURN_SPEED.times(elevatorMultiplier);
+
+            if ((desiredChassisSpeeds.vxMetersPerSecond > linearSpeedLimit.in(Units.MetersPerSecond))
+                    || (desiredChassisSpeeds.vyMetersPerSecond > linearSpeedLimit.in(Units.MetersPerSecond))
+                    || (desiredChassisSpeeds.omegaRadiansPerSecond > angularSpeedLimit.in(Units.RadiansPerSecond))) {
+
+                desiredChassisSpeeds.vxMetersPerSecond = MathUtil.clamp(desiredChassisSpeeds.vxMetersPerSecond, 0,
+                        linearSpeedLimit.in(MetersPerSecond));
+                desiredChassisSpeeds.vyMetersPerSecond = MathUtil.clamp(desiredChassisSpeeds.vyMetersPerSecond, 0,
+                        linearSpeedLimit.in(MetersPerSecond));
+                desiredChassisSpeeds.omegaRadiansPerSecond = MathUtil.clamp(desiredChassisSpeeds.omegaRadiansPerSecond,
+                        0,
+                        angularSpeedLimit.in(RadiansPerSecond));
+            }
+
+            // drive(desiredChassisSpeeds, isOpenLoop);
+            drive(new Translation2d(desiredChassisSpeeds.vxMetersPerSecond, desiredChassisSpeeds.vyMetersPerSecond),
+                    desiredChassisSpeeds.omegaRadiansPerSecond, true, isOpenLoop);
         }
     }
 
@@ -226,6 +376,7 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
+        updatePoseEstimator();
         robotPosePublisher.set(getPose());
         // desiredAlignmentPosePublisher.set();
         // desiredStatesPublisher.set(getModuleStates());
