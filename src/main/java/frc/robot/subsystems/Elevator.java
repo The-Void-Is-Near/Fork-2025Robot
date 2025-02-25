@@ -142,7 +142,7 @@ public class Elevator extends SubsystemBase {
   // outputStream.putFrame(image);
   // }
 
-  public void setReef(boolean invert) {
+  public void setReefCycle(boolean invert) {
     switch (currentReefPos) {
       case NONE:
         desiredReefPos = invert ? reefPosition.NONE : reefPosition.L1;
@@ -160,13 +160,18 @@ public class Elevator extends SubsystemBase {
         desiredReefPos = invert ? reefPosition.L3 : reefPosition.L4;
         break;
     }
+    setReefPosition(desiredReefPos);
+    // setReefDisplay();
+  }
+
+  public void setReefPosition(reefPosition desiredReefPosition) {
     setPosition(Units.Inches.of(
         desiredReefPos == reefPosition.NONE ? 0.0
             : desiredReefPos == reefPosition.L1 ? 20.0
                 : desiredReefPos == reefPosition.L2 ? 27.5
                     : desiredReefPos == reefPosition.L3 ? 42.5
                         : desiredReefPos == reefPosition.L4 ? 65.0 : 0.0));
-    currentReefPos = desiredReefPos;
+                        currentReefPos = desiredReefPos;
     // setReefDisplay();
   }
 

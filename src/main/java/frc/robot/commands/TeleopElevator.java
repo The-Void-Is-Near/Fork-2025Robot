@@ -35,7 +35,7 @@ public class TeleopElevator extends Command {
     if(elevator.getReefPosition() == Constants.reefPosition.L3 && invert == false) {
       outtake.schedule();
     }
-    elevator.setReef(invert);
+    elevator.setReefCycle(invert);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
