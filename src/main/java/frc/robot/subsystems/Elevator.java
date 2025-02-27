@@ -55,7 +55,7 @@ public class Elevator extends SubsystemBase {
   // private Mat image;
   // String imagePath;
 
-  /** Creates a new Climber. */
+  /** Creates a new Elevator. */
   public Elevator() {
     leftMotorFollower = new TalonFX(Constants.constElevator.LEFT_MOTOR_FOLLOWER_ID, Constants.CAN_BUS_NAME);
     rightMotorLeader = new TalonFX(Constants.constElevator.RIGHT_MOTOR_LEADER_ID, Constants.CAN_BUS_NAME);
@@ -142,7 +142,7 @@ public class Elevator extends SubsystemBase {
   // outputStream.putFrame(image);
   // }
 
-  public void setReef(boolean invert) {
+  public void setReefCycle(boolean invert) {
     switch (currentReefPos) {
       case NONE:
         desiredReefPos = invert ? reefPosition.NONE : reefPosition.L1;
@@ -160,14 +160,23 @@ public class Elevator extends SubsystemBase {
         desiredReefPos = invert ? reefPosition.L3 : reefPosition.L4;
         break;
     }
+    setReefPosition(desiredReefPos);
+    // setReefDisplay();
+  }
+
+  public void setReefPosition(reefPosition desiredReefPosition) {
     setPosition(Units.Inches.of(
         desiredReefPos == reefPosition.NONE ? 0.0
-            : desiredReefPos == reefPosition.L1 ? 10.0
-                : desiredReefPos == reefPosition.L2 ? 20.0
-                    : desiredReefPos == reefPosition.L3 ? 40.0
-                        : desiredReefPos == reefPosition.L4 ? 60.0 : 0.0));
-    currentReefPos = desiredReefPos;
+            : desiredReefPos == reefPosition.L1 ? 20.0
+                : desiredReefPos == reefPosition.L2 ? 27.5
+                    : desiredReefPos == reefPosition.L3 ? 42.5
+                        : desiredReefPos == reefPosition.L4 ? 65.0 : 0.0));
+                        currentReefPos = desiredReefPos;
     // setReefDisplay();
+  }
+
+  public reefPosition getReefPosition() {
+    return currentReefPos;
   }
 
   public void setNeutral() {
@@ -202,18 +211,18 @@ public class Elevator extends SubsystemBase {
     currentLeftPosition = Units.Inches.of(leftMotorFollower.getPosition().getValueAsDouble());
     currentRightPosition = Units.Inches.of(rightMotorLeader.getPosition().getValueAsDouble());
 
-    SmartDashboard.putNumber("Elevator/Left/CLO", leftMotorFollower.getClosedLoopOutput().getValueAsDouble());
-    SmartDashboard.putNumber("Elevator/Left/Output", leftMotorFollower.get());
-    SmartDashboard.putNumber("Elevator/Left/Inverted", leftMotorFollower.getAppliedRotorPolarity().getValueAsDouble());
-    SmartDashboard.putNumber("Elevator/Left/Current", leftMotorFollower.getSupplyCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Left/CLO", leftMotorFollower.getClosedLoopOutput().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Left/Output", leftMotorFollower.get());
+    // SmartDashboard.putNumber("Elevator/Left/Inverted", leftMotorFollower.getAppliedRotorPolarity().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Left/Current", leftMotorFollower.getSupplyCurrent().getValueAsDouble());
 
-    SmartDashboard.putNumber("Elevator/Right/CLO", rightMotorLeader.getClosedLoopOutput().getValueAsDouble());
-    SmartDashboard.putNumber("Elevator/Right/Output", rightMotorLeader.get());
-    SmartDashboard.putNumber("Elevator/Right/Inverted", rightMotorLeader.getAppliedRotorPolarity().getValueAsDouble());
-    SmartDashboard.putNumber("Elevator/Right/Current", rightMotorLeader.getSupplyCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Right/CLO", rightMotorLeader.getClosedLoopOutput().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Right/Output", rightMotorLeader.get());
+    // SmartDashboard.putNumber("Elevator/Right/Inverted", rightMotorLeader.getAppliedRotorPolarity().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Right/Current", rightMotorLeader.getSupplyCurrent().getValueAsDouble());
 
-    SmartDashboard.putBoolean("Elevator/atSetpoint", isAtSetpoint());
-    SmartDashboard.putNumber("Elevator/Position", getElevatorPosition().magnitude());
-    SmartDashboard.putNumber("Elevator/LastPosition", getLastDesiredPosition().magnitude());
+    // SmartDashboard.putBoolean("Elevator/atSetpoint", isAtSetpoint());
+    // SmartDashboard.putNumber("Elevator/Position", getElevatorPosition().magnitude());
+    // SmartDashboard.putNumber("Elevator/LastPosition", getLastDesiredPosition().magnitude());
   }
 }
