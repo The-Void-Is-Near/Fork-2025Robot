@@ -56,7 +56,7 @@ public final class Constants {
         public static final double TRACK_WIDTH = Units.Inches.of(21.75).in(Meters);
         public static final double WHEEL_BASE = Units.Inches.of(21.75).in(Meters);
         public static final double WHEEL_CIRCUMFRENCE = CHOSEN_MODULE.wheelCircumference;
-        public static final double WHEEL_RADIUS = CHOSEN_MODULE.wheelDiameter/2;
+        public static final double WHEEL_RADIUS = CHOSEN_MODULE.wheelDiameter / 2;
 
         /*
          * Swerve Kinematics
@@ -117,8 +117,8 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double MAX_SPEED = 4.5;
-        public static final LinearVelocity MAX_SPEED_UNITS = Units.MetersPerSecond.of(4.5);
+        public static final double MAX_SPEED = 5.8;
+        public static final LinearVelocity MAX_SPEED_UNITS = Units.MetersPerSecond.of(5.8);
         /** Radians per Second */
         public static final double MAX_ANGULAR_VELOCITY = 10.0;
 
@@ -164,7 +164,7 @@ public final class Constants {
                             Math.pow(TURN_SPEED.in(Units.DegreesPerSecond), 2)));
             public static final Angle AT_ROTATION_TOLERANCE = Units.Degrees.of(1);
 
-            public static final Distance AUTO_ALIGNMENT_TOLERANCE = Units.Inches.of(5);
+            public static final Distance AUTO_ALIGNMENT_TOLERANCE = Units.Inches.of(1);
 
             static {
                 TRANS_CONTROLLER.setTolerance(AT_POINT_TOLERANCE.in(Units.Meters));
@@ -465,8 +465,6 @@ public final class Constants {
             INTAKE_CONFIG.Slot0.kI = 0;
             INTAKE_CONFIG.Slot0.kD = 0;
 
-            
-
             // Inches the outside of the wheel has moved
             INTAKE_CONFIG.ExternalFeedback.SensorToMechanismRatio = 0.31847;
             INTAKE_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 400;
@@ -555,37 +553,37 @@ public final class Constants {
     }
 
     public static class AUTO {
-      // This PID is implemented on the Drivetrain subsystem
-      public static final double AUTO_DRIVE_P = 9;
-      public static final double AUTO_DRIVE_I = 0;
-      public static final double AUTO_DRIVE_D = 0;
-      public static final PIDConstants AUTO_DRIVE_PID = new PIDConstants(Constants.AUTO.AUTO_DRIVE_P,
-          Constants.AUTO.AUTO_DRIVE_I,
-          Constants.AUTO.AUTO_DRIVE_D);
+        // This PID is implemented on the Drivetrain subsystem
+        public static final double AUTO_DRIVE_P = 9;
+        public static final double AUTO_DRIVE_I = 0;
+        public static final double AUTO_DRIVE_D = 0;
+        public static final PIDConstants AUTO_DRIVE_PID = new PIDConstants(Constants.AUTO.AUTO_DRIVE_P,
+                Constants.AUTO.AUTO_DRIVE_I,
+                Constants.AUTO.AUTO_DRIVE_D);
 
-      public static final double AUTO_STEER_P = 5.6; // 5.7 is also pretty good if we begin seeing undershooting
-      public static final double AUTO_STEER_I = 0.0;
-      public static final double AUTO_STEER_D = 0.0;
-      public static final PIDConstants AUTO_STEER_PID = new PIDConstants(Constants.AUTO.AUTO_STEER_P,
-      Constants.AUTO.AUTO_STEER_I,
-      Constants.AUTO.AUTO_STEER_D);
+        public static final double AUTO_STEER_P = 5.6; // 5.7 is also pretty good if we begin seeing undershooting
+        public static final double AUTO_STEER_I = 0.0;
+        public static final double AUTO_STEER_D = 0.0;
+        public static final PIDConstants AUTO_STEER_PID = new PIDConstants(Constants.AUTO.AUTO_STEER_P,
+                Constants.AUTO.AUTO_STEER_I,
+                Constants.AUTO.AUTO_STEER_D);
 
-      public static final Mass MASS = Units.Kilograms.of(20);
-      // TODO: Calculate the real vaule
-      public static final double MOI = 8.0;
-      public static final double WHEEL_COF = 1.0;
-      public static final DCMotor DRIVE_MOTOR = DCMotor.getKrakenX60(1).withReduction(Swerve.CHOSEN_MODULE.driveGearRatio);
-      public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(Swerve.WHEEL_RADIUS, Swerve.MAX_SPEED, WHEEL_COF,
-          DRIVE_MOTOR,
-          Swerve.DRIVE_CURRENT_LIMIT, 1);
+        public static final Mass MASS = Units.Kilograms.of(20);
+        // TODO: Calculate the real vaule
+        public static final double MOI = 6.0;
+        public static final double WHEEL_COF = 1.2;
+        public static final DCMotor DRIVE_MOTOR = DCMotor.getKrakenX60(1).withReduction(5.36);
+        public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(2, 5.5, WHEEL_COF,
+                DRIVE_MOTOR,
+                Swerve.DRIVE_CURRENT_LIMIT, 1);
 
-      public static final Translation2d[] MODULE_OFFSETS = {
-          new Translation2d(Swerve.WHEEL_BASE / 2.0, Swerve.TRACK_WIDTH / 2.0),
-          new Translation2d(Swerve.WHEEL_BASE / 2.0, -Swerve.TRACK_WIDTH / 2.0),
-          new Translation2d(-Swerve.WHEEL_BASE / 2.0, Swerve.TRACK_WIDTH / 2.0),
-          new Translation2d(-Swerve.WHEEL_BASE / 2.0, -Swerve.TRACK_WIDTH / 2.0) };
+        public static final Translation2d[] MODULE_OFFSETS = {
+                new Translation2d(Swerve.WHEEL_BASE / 2.0, Swerve.TRACK_WIDTH / 2.0),
+                new Translation2d(Swerve.WHEEL_BASE / 2.0, -Swerve.TRACK_WIDTH / 2.0),
+                new Translation2d(-Swerve.WHEEL_BASE / 2.0, Swerve.TRACK_WIDTH / 2.0),
+                new Translation2d(-Swerve.WHEEL_BASE / 2.0, -Swerve.TRACK_WIDTH / 2.0) };
 
-      public static final RobotConfig ROBOT_CONFIG = new RobotConfig(MASS.in(Kilograms), MOI, MODULE_CONFIG,
-          MODULE_OFFSETS);
+        public static final RobotConfig ROBOT_CONFIG = new RobotConfig(MASS.in(Kilograms), MOI, MODULE_CONFIG,
+                MODULE_OFFSETS);
     }
 }

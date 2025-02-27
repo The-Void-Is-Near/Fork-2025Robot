@@ -1,0 +1,55 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "PlaceSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Place Coral"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SafetyPull"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "zeroElevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pirouette"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": "DEBUG",
+  "choreoAuto": false
+}
