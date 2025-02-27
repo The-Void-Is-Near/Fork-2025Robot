@@ -10,12 +10,10 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.constVision;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 public class Limelight extends SubsystemBase {
-  String limelightName = Constants.Limelight.LIMELIGHT_FRONT_NAME;
   PoseEstimate lastEstimateRight = new PoseEstimate();
   PoseEstimate lastEstimateLeft = new PoseEstimate();
 
@@ -94,17 +92,39 @@ public class Limelight extends SubsystemBase {
    *                 indicating new estimates are available.
    */
   public void setCurrentEstimates(AngularVelocity gyroRate) {
+    PoseEstimate currentEstimateRightTest = new PoseEstimate();
+    PoseEstimate currentEstimateLeftTest = new PoseEstimate();
     PoseEstimate currentEstimateRight = new PoseEstimate();
     PoseEstimate currentEstimateLeft = new PoseEstimate();
 
+    // if(!constField.isRedAlliance()) {
     if (useMegaTag2) {
-      currentEstimateRight = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(constVision.LIMELIGHT_NAMES[0]);
-      currentEstimateLeft = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(constVision.LIMELIGHT_NAMES[1]);
+      currentEstimateRightTest = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(constVision.LIMELIGHT_NAMES[0]);
+      currentEstimateLeftTest = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(constVision.LIMELIGHT_NAMES[0]);
+      currentEstimateRight = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[0]);
+      currentEstimateLeft = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[0]);
     } else {
       currentEstimateRight = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[0]);
-      currentEstimateLeft = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[1]);
+      currentEstimateLeft = LimelightHelpers.getBotPoseEstimate_wpiBlue(constVision.LIMELIGHT_NAMES[0]);
     }
+  // } else {
+  //   if (useMegaTag2) {
+  //     currentEstimateRightTest = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(constVision.LIMELIGHT_NAMES[0]);
+  //     currentEstimateLeftTest = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(constVision.LIMELIGHT_NAMES[0]);
+  //     currentEstimateRight = LimelightHelpers.getBotPoseEstimate_wpiRed(constVision.LIMELIGHT_NAMES[0]);
+  //     currentEstimateLeft = LimelightHelpers.getBotPoseEstimate_wpiRed(constVision.LIMELIGHT_NAMES[0]);
+  //   } else {
+  //     currentEstimateRight = LimelightHelpers.getBotPoseEstimate_wpiRed(constVision.LIMELIGHT_NAMES[0]);
+  //     currentEstimateLeft = LimelightHelpers.getBotPoseEstimate_wpiRed(constVision.LIMELIGHT_NAMES[0]);
+  //   }
+  // }
 
+    // if(megaTag2Check(currentEstimateLeftTest.pose, currentEstimateLeft.pose) || megaTag2Check(currentEstimateRightTest.pose, currentEstimateRight.pose)) {
+    //   currentEstimateLeft = currentEstimateLeftTest;
+    //   currentEstimateRight = currentEstimateRightTest;
+    //   SmartDashboard.putBoolean("megatag", true);
+    // }
+    // SmartDashboard.putBoolean("megatag", false);
     if (currentEstimateRight != null && !rejectUpdate(currentEstimateRight, gyroRate)) {
       lastEstimateRight = currentEstimateRight;
       rightPose = currentEstimateRight.pose;
@@ -115,6 +135,14 @@ public class Limelight extends SubsystemBase {
       leftPose = currentEstimateLeft.pose;
       newLeftEstimate = true;
     }
+  }
+
+  public boolean megaTag2Check(Pose2d megaTag2, Pose2d megaTag) {
+    double translationDifference = Math.abs(megaTag2.getTranslation().getDistance(megaTag.getTranslation()));
+    double rotationDifference = Math.abs(megaTag2.getRotation().getDegrees() - megaTag.getRotation().getDegrees());
+    // SmartDashboard.putNumber("transDiff", translationDifference);
+    // SmartDashboard.putNumber("rotDiff", rotationDifference);
+    return translationDifference <= 2 && rotationDifference <= 10;
   }
 
   public Optional<PoseEstimate> determinePoseEstimate(AngularVelocity gyroRate) {

@@ -1,8 +1,12 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -43,7 +47,8 @@ public class RobotContainer {
         public final Limelight limelight = new Limelight();
 
         /* PathPlanner */
-        private final SendableChooser<Command> autoChooser;
+        @NotLogged
+        SendableChooser<Command> autoChooser = new SendableChooser<>();
 
         /* Controllers */
         private final XboxController driver = new XboxController(0);
@@ -113,8 +118,8 @@ public class RobotContainer {
                                                 () -> btn_LeftTrigger.getAsBoolean(),
                                                 () -> btn_RightTrigger.getAsBoolean()));
 
-                autoChooser = AutoBuilder.buildAutoChooser();
-                SmartDashboard.putData("Auto Chooser", autoChooser);
+                configureAutoSelector();
+                // SmartDashboard.putData("Auto Chooser", autoChooser);
                 // Configure the button bindings
                 configureButtonBindings();
 
@@ -131,7 +136,8 @@ public class RobotContainer {
 
         private void configureButtonBindings() {
                 /* Driver Buttons */
-                zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+                zeroGyro.onTrue(new InstantCommand(
+                                () -> s_Swerve.resetOdometry(Constants.constField.getFieldPositions().get()[0])));
                 // alignRButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, true));
                 // alignLButton.whileTrue(new TeleopLimelightDrive(s_Swerve, limelight, false));
                 extendElevator.onTrue(new TeleopElevator(elevator, intake, false)
@@ -152,5 +158,23 @@ public class RobotContainer {
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
                 // return null;
+        }
+
+        private void configureAutoSelector() {
+                autoChooser = AutoBuilder.buildAutoChooser("BenEX");
+                SmartDashboard.putData("Auto Chooser", autoChooser);
+        }
+
+        public void resetToAutoPose() {
+                Rotation2d desiredRotation = Rotation2d.kZero;
+
+                try {
+                        desiredRotation = PathPlannerAuto.getPathGroupFromAutoFile(autoChooser.getSelected().getName())
+                                        .get(0)
+                                        .getIdealStartingState().rotation();
+                } catch (Exception e) {
+                }
+
+                s_Swerve.resetOdometry(new Pose2d(s_Swerve.getPose().getTranslation(), desiredRotation));
         }
 }

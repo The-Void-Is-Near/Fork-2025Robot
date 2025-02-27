@@ -211,18 +211,18 @@ public class Elevator extends SubsystemBase {
     currentLeftPosition = Units.Inches.of(leftMotorFollower.getPosition().getValueAsDouble());
     currentRightPosition = Units.Inches.of(rightMotorLeader.getPosition().getValueAsDouble());
 
-    SmartDashboard.putNumber("Elevator/Left/CLO", leftMotorFollower.getClosedLoopOutput().getValueAsDouble());
-    SmartDashboard.putNumber("Elevator/Left/Output", leftMotorFollower.get());
-    SmartDashboard.putNumber("Elevator/Left/Inverted", leftMotorFollower.getAppliedRotorPolarity().getValueAsDouble());
-    SmartDashboard.putNumber("Elevator/Left/Current", leftMotorFollower.getSupplyCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Left/CLO", leftMotorFollower.getClosedLoopOutput().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Left/Output", leftMotorFollower.get());
+    // SmartDashboard.putNumber("Elevator/Left/Inverted", leftMotorFollower.getAppliedRotorPolarity().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Left/Current", leftMotorFollower.getSupplyCurrent().getValueAsDouble());
 
-    SmartDashboard.putNumber("Elevator/Right/CLO", rightMotorLeader.getClosedLoopOutput().getValueAsDouble());
-    SmartDashboard.putNumber("Elevator/Right/Output", rightMotorLeader.get());
-    SmartDashboard.putNumber("Elevator/Right/Inverted", rightMotorLeader.getAppliedRotorPolarity().getValueAsDouble());
-    SmartDashboard.putNumber("Elevator/Right/Current", rightMotorLeader.getSupplyCurrent().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Right/CLO", rightMotorLeader.getClosedLoopOutput().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Right/Output", rightMotorLeader.get());
+    // SmartDashboard.putNumber("Elevator/Right/Inverted", rightMotorLeader.getAppliedRotorPolarity().getValueAsDouble());
+    // SmartDashboard.putNumber("Elevator/Right/Current", rightMotorLeader.getSupplyCurrent().getValueAsDouble());
 
-    SmartDashboard.putBoolean("Elevator/atSetpoint", isAtSetpoint());
-    SmartDashboard.putNumber("Elevator/Position", getElevatorPosition().magnitude());
-    SmartDashboard.putNumber("Elevator/LastPosition", getLastDesiredPosition().magnitude());
+    // SmartDashboard.putBoolean("Elevator/atSetpoint", isAtSetpoint());
+    // SmartDashboard.putNumber("Elevator/Position", getElevatorPosition().magnitude());
+    // SmartDashboard.putNumber("Elevator/LastPosition", getLastDesiredPosition().magnitude());
   }
 }

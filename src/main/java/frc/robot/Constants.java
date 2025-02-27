@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -33,6 +34,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -54,6 +56,7 @@ public final class Constants {
         public static final double TRACK_WIDTH = Units.Inches.of(21.75).in(Meters);
         public static final double WHEEL_BASE = Units.Inches.of(21.75).in(Meters);
         public static final double WHEEL_CIRCUMFRENCE = CHOSEN_MODULE.wheelCircumference;
+        public static final double WHEEL_RADIUS = CHOSEN_MODULE.wheelDiameter/2;
 
         /*
          * Swerve Kinematics
@@ -61,10 +64,10 @@ public final class Constants {
          * rectangular/square 4 module swerve
          */
         public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-                new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
-                new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
-                new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
-                new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
+                new Translation2d(WHEEL_BASE / 2.0, Swerve.TRACK_WIDTH / 2.0),
+                new Translation2d(WHEEL_BASE / 2.0, -Swerve.TRACK_WIDTH / 2.0),
+                new Translation2d(-WHEEL_BASE / 2.0, Swerve.TRACK_WIDTH / 2.0),
+                new Translation2d(-WHEEL_BASE / 2.0, -Swerve.TRACK_WIDTH / 2.0));
 
         /* Module Gear Ratios */
         public static final double DRIVE_GEAR_RATIO = CHOSEN_MODULE.driveGearRatio;
@@ -436,12 +439,12 @@ public final class Constants {
         // The below values are accounted for in the limelight interface, NOT in code
         public static class LIMELIGHT_FRONT {
             public static final Distance LL_FORWARD = Units.Meters.of(0.2921);
-            public static final Distance LL_RIGHT = Units.Meters.of(-0.254);
+            public static final Distance LL_RIGHT = Units.Meters.of(-0.274);
             public static final Distance LL_UP = Units.Meters.of(0.2032);
 
             public static final Angle LL_ROLL = Units.Degrees.of(180);
             public static final Angle LL_PITCH = Units.Degrees.of(15);
-            public static final Angle LL_YAW = Units.Degrees.of(-30);
+            public static final Angle LL_YAW = Units.Degrees.of(-40);
         }
     }
 
@@ -454,18 +457,20 @@ public final class Constants {
             INTAKE_CONFIG.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
             INTAKE_CONFIG.Slot0.GravityType = GravityTypeValue.Elevator_Static;
-            INTAKE_CONFIG.Slot0.kS = 0.6; // Volts to overcome static friction
+            INTAKE_CONFIG.Slot0.kS = 1; // Volts to overcome static friction
             INTAKE_CONFIG.Slot0.kG = 0;
             INTAKE_CONFIG.Slot0.kV = 0.001; // Volts for a velocity target of 1 rps
             INTAKE_CONFIG.Slot0.kA = 0.001; // Volts for an acceleration of 1 rps/s
-            INTAKE_CONFIG.Slot0.kP = 0.95;
-            INTAKE_CONFIG.Slot0.kI = 0.01;
-            INTAKE_CONFIG.Slot0.kD = 0.0095;
+            INTAKE_CONFIG.Slot0.kP = 0.1;
+            INTAKE_CONFIG.Slot0.kI = 0;
+            INTAKE_CONFIG.Slot0.kD = 0;
+
+            
 
             // Inches the outside of the wheel has moved
             INTAKE_CONFIG.ExternalFeedback.SensorToMechanismRatio = 0.31847;
             INTAKE_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 400;
-            INTAKE_CONFIG.MotionMagic.MotionMagicAcceleration = 1500;
+            INTAKE_CONFIG.MotionMagic.MotionMagicAcceleration = 3000;
         }
         public static final int MOTOR_ID = 17;
         public static final double OUTTAKE_VOLTAGE = 3;
@@ -492,7 +497,7 @@ public final class Constants {
             ELEVATOR_CONFIG.Slot0.kS = 0.5; // Volts to overcome static friction
             ELEVATOR_CONFIG.Slot0.kV = 0.001; // Volts for a velocity target of 1 rps
             ELEVATOR_CONFIG.Slot0.kA = 0.001; // Volts for an acceleration of 1 rps/s
-            ELEVATOR_CONFIG.Slot0.kP = 1.6;
+            ELEVATOR_CONFIG.Slot0.kP = 1.3;
             ELEVATOR_CONFIG.Slot0.kI = 0.001;
             ELEVATOR_CONFIG.Slot0.kD = 0.1;
 
@@ -549,36 +554,38 @@ public final class Constants {
         public static final String LIMELIGHT_FRONT_NAME = "limelight-front";
     }
 
-    public static final class AutoConstants {
-        public static final double KMAX_SPEED_METERS_PER_SECOND = 3;
-        public static final double KMAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3;
-        public static final double KMAX_ANGULAR_SPEED_RADIANS_PER_SECOND = Math.PI;
-        public static final double KMAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED = Math.PI;
+    public static class AUTO {
+      // This PID is implemented on the Drivetrain subsystem
+      public static final double AUTO_DRIVE_P = 9;
+      public static final double AUTO_DRIVE_I = 0;
+      public static final double AUTO_DRIVE_D = 0;
+      public static final PIDConstants AUTO_DRIVE_PID = new PIDConstants(Constants.AUTO.AUTO_DRIVE_P,
+          Constants.AUTO.AUTO_DRIVE_I,
+          Constants.AUTO.AUTO_DRIVE_D);
 
-        public static final double KPX_CONTROLLER = 1;
-        public static final double KPY_CONTROLLER = 1;
-        public static final double KP_THETA_CONTROLLER = 1;
+      public static final double AUTO_STEER_P = 5.6; // 5.7 is also pretty good if we begin seeing undershooting
+      public static final double AUTO_STEER_I = 0.0;
+      public static final double AUTO_STEER_D = 0.0;
+      public static final PIDConstants AUTO_STEER_PID = new PIDConstants(Constants.AUTO.AUTO_STEER_P,
+      Constants.AUTO.AUTO_STEER_I,
+      Constants.AUTO.AUTO_STEER_D);
 
-        public static final double MASS = 115;
-        // TODO: Calcuate the real value
-        public static final double MOI = 6.8;
-        public static final double WHEEL_COF = 1.0;
-        public static final DCMotor DRIVE_MOTOR = DCMotor.getKrakenX60(1);
-        public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(Constants.Swerve.WHEEL_CIRCUMFRENCE / 2,
-                Constants.Swerve.MAX_SPEED, WHEEL_COF,
-                DRIVE_MOTOR,
-                Constants.Swerve.DRIVE_CURRENT_LIMIT, 1);
+      public static final Mass MASS = Units.Kilograms.of(20);
+      // TODO: Calculate the real vaule
+      public static final double MOI = 8.0;
+      public static final double WHEEL_COF = 1.0;
+      public static final DCMotor DRIVE_MOTOR = DCMotor.getKrakenX60(1).withReduction(Swerve.CHOSEN_MODULE.driveGearRatio);
+      public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(Swerve.WHEEL_RADIUS, Swerve.MAX_SPEED, WHEEL_COF,
+          DRIVE_MOTOR,
+          Swerve.DRIVE_CURRENT_LIMIT, 1);
 
-        public static final Translation2d[] MODULE_OFFSETS = {
-                new Translation2d(Constants.Swerve.WHEEL_BASE / 2.0, Constants.Swerve.TRACK_WIDTH / 2.0),
-                new Translation2d(Constants.Swerve.WHEEL_BASE / 2.0, -Constants.Swerve.TRACK_WIDTH / 2.0),
-                new Translation2d(-Constants.Swerve.WHEEL_BASE / 2.0, Constants.Swerve.TRACK_WIDTH / 2.0),
-                new Translation2d(-Constants.Swerve.WHEEL_BASE / 2.0, -Constants.Swerve.TRACK_WIDTH / 2.0) };
+      public static final Translation2d[] MODULE_OFFSETS = {
+          new Translation2d(Swerve.WHEEL_BASE / 2.0, Swerve.TRACK_WIDTH / 2.0),
+          new Translation2d(Swerve.WHEEL_BASE / 2.0, -Swerve.TRACK_WIDTH / 2.0),
+          new Translation2d(-Swerve.WHEEL_BASE / 2.0, Swerve.TRACK_WIDTH / 2.0),
+          new Translation2d(-Swerve.WHEEL_BASE / 2.0, -Swerve.TRACK_WIDTH / 2.0) };
 
-        public static final RobotConfig ROBOT_CONFIG = new RobotConfig(MASS, MOI, MODULE_CONFIG, MODULE_OFFSETS);
-
-        /* Constraint for the motion profilied robot angle controller */
-        public static final TrapezoidProfile.Constraints KTHETA_CONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
-                KMAX_ANGULAR_SPEED_RADIANS_PER_SECOND, KMAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED);
+      public static final RobotConfig ROBOT_CONFIG = new RobotConfig(MASS.in(Kilograms), MOI, MODULE_CONFIG,
+          MODULE_OFFSETS);
     }
 }
