@@ -7,7 +7,7 @@ import java.util.List;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.MathUtil;
@@ -28,13 +28,13 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.constField;
 import frc.robot.Constants.constVision;
+import frc.robot.LimelightHelpers;
 import frc.robot.SwerveModule;
 
 public class Swerve extends SubsystemBase {
@@ -49,6 +49,7 @@ public class Swerve extends SubsystemBase {
     public double timeFromLastUpdate = 0;
     public double lastSimTime = Timer.getFPGATimestamp();
     Pose2d desiredAlignmentPose = Pose2d.kZero;
+    RobotConfig config;
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.PIGEON_ID, Constants.CAN_BUS_NAME);
@@ -81,34 +82,16 @@ public class Swerve extends SubsystemBase {
                         constVision.MEGA_TAG2_STD_DEVS_POSITION,
                         constVision.MEGA_TAG2_STD_DEVS_HEADING));
 
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // Configure AutoBuilder last
-        AutoBuilder.configure(
-                this::getPoseEstimator, // Robot pose supplier
-                this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT
-                                                                      // RELATIVE ChassisSpeeds. Also optionally outputs
-                                                                      // individual module feedforwards
-                new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for
-                                                // holonomic drive trains
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-                ),
-                Constants.AUTO.ROBOT_CONFIG, // The robot configuration
-                () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red
-                    // alliance
-                    // This will flip the path being followed to the red side of the field.
-                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                },
-                this // Reference to this subsystem to set requirements
-        );
+        AutoBuilder.configure(this::getPoseEstimator, this::resetOdometry, this::getRobotRelativeSpeeds,
+                (speeds, feedforwards) -> driveRobotRelative(speeds),
+                new PPHolonomicDriveController(Constants.AUTO.AUTO_DRIVE_PID, Constants.AUTO.AUTO_STEER_PID), config,
+                () -> constField.isRedAlliance(), this);
 
     }
 
@@ -180,7 +163,7 @@ public class Swerve extends SubsystemBase {
 
     public void driveRobotRelative(ChassisSpeeds robotRelativeChassisSpeeds) {
         SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics
-                .toSwerveModuleStates(robotRelativeChassisSpeeds);
+                .toSwerveModuleStates(ChassisSpeeds.discretize(robotRelativeChassisSpeeds, timeFromLastUpdate));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.MAX_SPEED);
         for (SwerveModule mod : mSwerveMods) {
@@ -292,7 +275,8 @@ public class Swerve extends SubsystemBase {
 
     public Boolean isAligned() {
         return desiredAlignmentPose.getTranslation().getDistance(getPoseEstimator()
-                .getTranslation()) <= Constants.Swerve.TELEOP_AUTO_ALIGN.AUTO_ALIGNMENT_TOLERANCE.in(Units.Meters);
+                .getTranslation()) <= Constants.Swerve.TELEOP_AUTO_ALIGN.AUTO_ALIGNMENT_TOLERANCE.in(Units.Meters) && Math.abs(desiredAlignmentPose.getRotation().getDegrees() - (getPoseEstimator()
+                .getRotation().getDegrees())) <= Constants.Swerve.TELEOP_AUTO_ALIGN.AT_ROTATION_TOLERANCE.in(Units.Degrees);
     }
 
     public void autoAlign(Distance distanceFromTarget, Pose2d desiredTarget,
@@ -301,6 +285,7 @@ public class Swerve extends SubsystemBase {
             AngularVelocity rVelocity, double elevatorMultiplier, boolean isOpenLoop, Distance maxAutoDriveDistance) {
         desiredAlignmentPose = desiredTarget;
         int redAllianceMultiplier = constField.isRedAlliance() ? -1 : 1;
+        LimelightHelpers.setLEDMode_ForceOn(Constants.constVision.LIMELIGHT_NAMES[0]);
 
         if (distanceFromTarget.gte(maxAutoDriveDistance)) {
             // Rotational-only auto-align
@@ -359,10 +344,6 @@ public class Swerve extends SubsystemBase {
         return positions;
     }
 
-    public Pose2d getPose() {
-        return swervePoseEstimator.getEstimatedPosition();
-    }
-
     public Pose2d getPoseEstimator() {
         return swervePoseEstimator.getEstimatedPosition();
     }
@@ -377,12 +358,12 @@ public class Swerve extends SubsystemBase {
     }
 
     public Rotation2d getHeading() {
-        return getPose().getRotation();
+        return getPoseEstimator().getRotation();
     }
 
     public void setHeading(Rotation2d heading) {
         swervePoseEstimator.resetPosition(getGyroYaw(), getModulePositions(),
-                new Pose2d(getPose().getTranslation(), heading));
+                new Pose2d(getPoseEstimator().getTranslation(), heading));
     }
 
     // public void zeroHeading() {
@@ -412,11 +393,11 @@ public class Swerve extends SubsystemBase {
         updateTimer();
         updatePoseEstimator();
         limelightPosePublisher.set(getPoseEstimator());
-        robotPosePublisher.set(getPose());
         desiredAlignmentPosePublisher.set(desiredAlignmentPose);
         // desiredStatesPublisher.set(getModuleStates());
         actualStatesPublisher.set(getModuleStates());
         // swerveOdometry.update(getGyroYaw(), getModulePositions());
+        SmartDashboard.putBoolean("isAligned", isAligned());
         for (SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());

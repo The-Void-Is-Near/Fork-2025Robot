@@ -1,12 +1,17 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
 
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -14,7 +19,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.constVision;
@@ -107,6 +114,7 @@ public class RobotContainer {
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
+                configureAutoBindings();
                 s_Swerve.setDefaultCommand(
                                 new TeleopSwerve(
                                                 s_Swerve,
@@ -157,12 +165,54 @@ public class RobotContainer {
          */
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
+                // try{
+                // PathPlannerPath path = PathPlannerPath.fromPathFile("2025");
+                // return AutoBuilder.followPath(path);
+                // } catch (Exception e) {
+                // return Commands.none();
+                // }
                 // return null;
         }
 
         private void configureAutoSelector() {
                 autoChooser = AutoBuilder.buildAutoChooser("BenEX");
                 SmartDashboard.putData("Auto Chooser", autoChooser);
+        }
+
+        private void configureAutoBindings() {
+
+                Command driveAutoAlignLeft = Commands.runOnce(() -> s_Swerve.autoAlign(Meters.of(0),
+                                s_Swerve.getDesiredReef(true), MetersPerSecond.of(0),
+                                MetersPerSecond.of(0), DegreesPerSecond.of(0), 1.0, false, Meters.of(1000)))
+                                .repeatedly();
+
+                NamedCommands.registerCommand("Place Coral",
+                                new InstantCommand(() -> intake.setPosition(Units.Inches.of(20))));
+
+                NamedCommands.registerCommand("PlaceSequence",
+                                Commands.sequence(
+                                                driveAutoAlignLeft.asProxy().until(() -> s_Swerve.isAligned())
+                                                                .withTimeout(2),
+                                                Commands.runOnce(
+                                                                () -> s_Swerve.autoDrive(new ChassisSpeeds(), false))));
+
+                NamedCommands.registerCommand("zeroElevator", new SequentialCommandGroup(
+                                new InstantCommand(() -> elevator.setPosition(Units.Inches.of(0)))
+                                                .until(() -> elevator.isAtSetpoint()).withTimeout(1),
+                                new ZeroElevator(elevator)));
+                NamedCommands.registerCommand("PrepL4",
+                                new InstantCommand(() -> elevator.setPosition(Units.Inches.of(65)))
+                                                .until(() -> elevator.isAtSetpoint()));
+
+                EventTrigger prepL4 = new EventTrigger("PrepL4");
+                prepL4.onTrue(new InstantCommand(() -> elevator.setPosition(Units.Inches.of(65)))
+                                .until(() -> elevator.isAtSetpoint()));
+
+                EventTrigger zeroElevator = new EventTrigger("zeroElevator");
+                zeroElevator.onTrue(new SequentialCommandGroup(
+                                new InstantCommand(() -> elevator.setPosition(Units.Inches.of(0)))
+                                                .until(() -> elevator.isAtSetpoint()).withTimeout(1),
+                                new ZeroElevator(elevator)));
         }
 
         public void resetToAutoPose() {
@@ -173,8 +223,9 @@ public class RobotContainer {
                                         .get(0)
                                         .getIdealStartingState().rotation();
                 } catch (Exception e) {
+                        // System.out.println("badAutoRot");
                 }
 
-                s_Swerve.resetOdometry(new Pose2d(s_Swerve.getPose().getTranslation(), desiredRotation));
+                s_Swerve.resetOdometry(new Pose2d(s_Swerve.getPoseEstimator().getTranslation(), desiredRotation));
         }
 }

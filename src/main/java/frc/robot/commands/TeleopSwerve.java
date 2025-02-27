@@ -10,6 +10,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.constField;
@@ -48,8 +49,8 @@ public class TeleopSwerve extends Command {
 
     @Override
     public void execute() {
-        elevatorMultiplier = MathUtil.clamp(1 - MathUtil.applyDeadband(elevator.getElevatorPosition().magnitude() / 30,
-                Constants.constElevator.MULTIPLIER_DEADZONE), 0.1, 1);
+        elevatorMultiplier = MathUtil.clamp(1 - MathUtil.applyDeadband(elevator.getElevatorPosition().magnitude() / 60,
+                Constants.constElevator.MULTIPLIER_DEADZONE), 0.35, 1);
         /* Get Values, Deadband */
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.STICK_DEADBAND);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.STICK_DEADBAND);
@@ -57,7 +58,7 @@ public class TeleopSwerve extends Command {
         // SmartDashboard.putNumber("Translation", translationVal);
         // SmartDashboard.putNumber("Strafe", strafeVal);
         // SmartDashboard.putNumber("Rotation", rotationVal);
-        // SmartDashboard.putNumber("Elevator/Elevator Multiplier", elevatorMultiplier);
+        SmartDashboard.putNumber("Elevator/Elevator Multiplier", elevatorMultiplier);
 
         // -- Velocities --
         LinearVelocity xVelocity = Units.MetersPerSecond.of(translationVal * elevatorMultiplier);
