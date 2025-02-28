@@ -66,8 +66,8 @@ public class RobotContainer {
         private final int rotationAxis = XboxController.Axis.kRightX.value;
 
         /* Driver Buttons */
-        private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-        private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kStart.value);
+        private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
+        private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftStick.value);
         public Trigger btn_LeftTrigger = new Trigger(() -> driver.getLeftTriggerAxis() > 0.7);
         public Trigger btn_RightTrigger = new Trigger(() -> driver.getRightTriggerAxis() > 0.7);
         // private final JoystickButton alignLButton = new JoystickButton(driver,
@@ -82,7 +82,7 @@ public class RobotContainer {
                         XboxController.Button.kA.value);
         private final JoystickButton intakeButton = new JoystickButton(driver,
                         XboxController.Button.kB.value);
-        private final JoystickButton zeroSubsystem = new JoystickButton(driver, XboxController.Button.kStart.value);
+        private final JoystickButton zeroSubsystem = new JoystickButton(driver, XboxController.Button.kY.value);
 
         Command manualZeroSubsystems = new ManualZeroElevator(elevator)
                         .ignoringDisable(true).withName("ManualZeroSubsystems");
@@ -185,6 +185,9 @@ public class RobotContainer {
                                 s_Swerve.getDesiredReef(true), MetersPerSecond.of(0),
                                 MetersPerSecond.of(0), DegreesPerSecond.of(0), 1.0, false, Meters.of(1000)))
                                 .repeatedly();
+
+                Command intakeAuto = new SequentialCommandGroup(
+                                new InstantCommand(() -> intake.setVoltage(Constants.constIntake.INTAKE_VOLTAGE)).withTimeout(3), new InstantCommand(() -> intake.setPosition(Units.Inches.of(3))));
 
                 NamedCommands.registerCommand("Place Coral",
                                 new InstantCommand(() -> intake.setPosition(Units.Inches.of(20))));
