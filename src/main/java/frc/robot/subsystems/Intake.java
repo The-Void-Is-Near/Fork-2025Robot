@@ -27,6 +27,7 @@ public class Intake extends SubsystemBase {
   public void setPosition(Distance inches) {
     intakeM.setControl(motionRequest.withPosition(Units.Inches.of(intakeM.getPosition().getValueAsDouble()).plus(inches).in(Units.Inches)));
   }
+  
 
   public Distance getIntakePosition() {
     return Units.Inches.of(intakeM.getPosition().getValueAsDouble());
