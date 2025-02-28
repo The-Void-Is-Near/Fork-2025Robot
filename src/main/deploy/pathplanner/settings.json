@@ -3,7 +3,9 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "DEBUG"
+    "DEBUG",
+    "LeftReef",
+    "RightReef"
   ],
   "autoFolders": [
     "DEBUG"

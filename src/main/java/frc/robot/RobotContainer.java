@@ -187,8 +187,11 @@ public class RobotContainer {
                                 .repeatedly();
 
                 Command intakeAuto = new SequentialCommandGroup(
-                                new InstantCommand(() -> intake.setVoltage(Constants.constIntake.INTAKE_VOLTAGE)).withTimeout(3), new InstantCommand(() -> intake.setPosition(Units.Inches.of(3))));
+                                new InstantCommand(() -> intake.setVoltage(Constants.constIntake.INTAKE_VOLTAGE))
+                                                .withTimeout(3),
+                                new InstantCommand(() -> intake.setPosition(Units.Inches.of(3))));
 
+                NamedCommands.registerCommand("Intake", intakeAuto);
                 NamedCommands.registerCommand("Place Coral",
                                 new InstantCommand(() -> intake.setPosition(Units.Inches.of(20))));
 
