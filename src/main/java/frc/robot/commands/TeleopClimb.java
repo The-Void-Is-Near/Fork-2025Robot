@@ -1,21 +1,16 @@
 
-
 package frc.robot.commands;
-import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Climb;
 
-public class TeleopDeepClimb extends Command {
-  TalonFX deepClimbM;
-  float theta;
+public class TeleopClimb extends Command {
+  Climb robotClimb;
 
-  public TeleopDeepClimb() {
-    this.theta = theta;
-    this.deepClimbM = deepClimbM;
-  }
   @Override
   public void execute() {
     // deepClimbM.Rotate(theta);
+    robotClimb.rotate(0.0);
+
   }
 
   @Override

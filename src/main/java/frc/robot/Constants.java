@@ -586,4 +586,8 @@ public final class Constants {
         public static final RobotConfig ROBOT_CONFIG = new RobotConfig(MASS.in(Kilograms), MOI, MODULE_CONFIG,
                 MODULE_OFFSETS);
     }
+
+    public static class climb{
+        public static final int motorID = 65; //15?
+    }
 }
