@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class TeleopDeepClimb extends Command {
   TalonFX deepClimbM;
   float theta;
-  
+
   public TeleopDeepClimb() {
     this.theta = theta;
     this.deepClimbM = deepClimbM;
